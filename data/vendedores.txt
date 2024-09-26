@@ -1,0 +1,4 @@
+class Vendedor:
+    def __init__(self, codigo, usuario):
+        self.codigo = codigo
+        self.usuario = usuario
