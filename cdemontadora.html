@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Montadoras</title>
+    <nav>
+        <ul>
+            <li><a href="sigma.html">Voltar ao Menu Principal</a></li>
+        </ul>
+    </nav>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-container, .table-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .btn {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #7cb3a3;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #f19681;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #7cb3a3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gerenciamento de Montadoras</h1>
+
+    <div class="form-container">
+        <h2>Adicionar Montadora</h2>
+        <form id="montadoraForm">
+            <label for="cnpj">CNPJ:</label>
+            <input type="text" id="cnpj" required>
+
+            <label for="razao_social">Razão Social:</label>
+            <input type="text" id="razao_social" required>
+
+            <label for="marca">Marca:</label>
+            <input type="text" id="marca" required>
+
+            <label for="contato">Contato:</label>
+            <input type="text" id="contato" required>
+
+            <label for="telefone_comercial">Telefone Comercial:</label>
+            <input type="text" id="telefone_comercial" required>
+
+            <label for="celular">Celular:</label>
+            <input type="text" id="celular" required>
+
+            <button type="button" class="btn" onclick="adicionarMontadora()">Adicionar Montadora</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2>Lista de Montadoras</h2>
+        <table id="montadorasTable">
+            <thead>
+                <tr>
+                    <th>CNPJ</th>
+                    <th>Razão Social</th>
+                    <th>Marca</th>
+                    <th>Contato</th>
+                    <th>Telefone</th>
+                    <th>Celular</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Os dados das montadoras serão inseridos aqui -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const montadoras = [];
+
+        function adicionarMontadora() {
+            const cnpj = document.getElementById("cnpj").value;
+            const razao_social = document.getElementById("razao_social").value;
+            const marca = document.getElementById("marca").value;
+            const contato = document.getElementById("contato").value;
+            const telefone_comercial = document.getElementById("telefone_comercial").value;
+            const celular = document.getElementById("celular").value;
+
+            const montadora = { cnpj, razao_social, marca, contato, telefone_comercial, celular };
+            montadoras.push(montadora);
+            atualizarTabela();
+            document.getElementById("montadoraForm").reset();
+        }
+
+        function atualizarTabela() {
+            const tbody = document.getElementById("montadorasTable").querySelector("tbody");
+            tbody.innerHTML = "";
+
+            montadoras.forEach(montadora => {
+                const row = document.createElement("tr");
+
+                Object.values(montadora).forEach(value => {
+                    const cell = document.createElement("td");
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+
+</body>
+</html>
