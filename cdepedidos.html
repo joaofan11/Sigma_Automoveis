@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos</title>
+    <style>body {
+        font-family: Arial, sans-serif;
+    }
+    
+    #form-pedido {
+        width: 50%;
+        margin: 0 auto;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    input {
+        width: 100%;
+        height: 30px;
+        margin-bottom: 20px;
+        padding: 10px;
+        box-sizing: border-box;
+    }
+    
+    #btn-adicionar {
+        width: 100%;
+        height: 40px;
+        background-color: #4CAF50;
+        color: #fff;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    #lista-pedidos {
+        width: 50%;
+        margin: 0 auto;
+        margin-top: 40px;
+    }
+    
+    .pedido {
+        background-color: #f0f0f0;
+        padding: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+    
+    .pedido:last-child {
+        border-bottom: none;
+    } </style>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Pedidos</h1>
+    <form id="form-pedido">
+        <label for="numero">Número:</label>
+        <input type="text" id="numero" required><br><br>
+        <label for="data">Data:</label>
+        <input type="date" id="data" required><br><br>
+        <label for="cliente">Cliente:</label>
+        <input type="text" id="cliente" required><br><br>
+        <label for="vendedor">Vendedor:</label>
+        <input type="text" id="vendedor" required><br><br>
+        <label for="montadora">Montadora:</label>
+        <input type="text" id="montadora" required><br><br>
+        <label for="modelo">Modelo:</label>
+        <input type="text" id="modelo" required><br><br>
+        <label for="ano">Ano:</label>
+        <input type="number" id="ano" required><br><br>
+        <label for="cor">Cor:</label>
+        <input type="text" id="cor" required><br><br>
+        <label for="acessorios">Acessórios:</label>
+        <input type="text" id="acessorios" required><br><br>
+        <label for="valor">Valor:</label>
+        <input type="number" id="valor" required><br><br>
+        <button id="btn-adicionar">Adicionar Pedido</button>
+    </form>
+    <div id="lista-pedidos"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>

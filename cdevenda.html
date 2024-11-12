@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <nav>
+        <ul>
+            <li><a href="sigma.html">Voltar ao Menu Principal</a></li>
+        </ul>
+    </nav>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operação de Venda - Sistema Rede Sigma</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            width: 600px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #2e86de;
+        }
+
+        .form-field {
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        .form-field label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-field input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .menu-button {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #7cb3a3;
+            border: none;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .menu-button:hover {
+            background-color: #f19681;
+        }
+
+        #vendasList {
+            margin-top: 20px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Operação de Venda</h1>
+        
+        <div id="form">
+            <div class="form-field">
+                <label for="numero">Número da Operação:</label>
+                <input type="text" id="numero">
+            </div>
+            <div class="form-field">
+                <label for="data">Data:</label>
+                <input type="date" id="data">
+            </div>
+            <div class="form-field">
+                <label for="cliente">Nome do Cliente:</label>
+                <input type="text" id="cliente">
+            </div>
+            <div class="form-field">
+                <label for="vendedor">Nome do Vendedor:</label>
+                <input type="text" id="vendedor">
+            </div>
+            <div class="form-field">
+                <label for="veiculo">Placa do Veículo:</label>
+                <input type="text" id="veiculo">
+            </div>
+            <div class="form-field">
+                <label for="valorEntrada">Valor de Entrada:</label>
+                <input type="number" step="0.01" id="valorEntrada">
+            </div>
+            <div class="form-field">
+                <label for="valorFinanciado">Valor Financiado:</label>
+                <input type="number" step="0.01" id="valorFinanciado">
+            </div>
+            <div class="form-field">
+                <label for="valorTotal">Valor Total:</label>
+                <input type="number" step="0.01" id="valorTotal">
+            </div>
+
+            <button class="menu-button" onclick="adicionarVenda()">Adicionar Venda</button>
+            <button class="menu-button" onclick="listarVendas()">Listar Vendas</button>
+        </div>
+        
+        <div id="vendasList"></div>
+    </div>
+
+    <script>
+        // Array para armazenar as vendas
+        let vendas = [];
+
+        // Função para adicionar uma venda
+        function adicionarVenda() {
+            const venda = {
+                numero: document.getElementById("numero").value,
+                data: document.getElementById("data").value,
+                cliente: document.getElementById("cliente").value,
+                vendedor: document.getElementById("vendedor").value,
+                veiculo: document.getElementById("veiculo").value,
+                valorEntrada: parseFloat(document.getElementById("valorEntrada").value),
+                valorFinanciado: parseFloat(document.getElementById("valorFinanciado").value),
+                valorTotal: parseFloat(document.getElementById("valorTotal").value),
+            };
+
+            // Adiciona a venda ao array e exibe uma mensagem de sucesso
+            vendas.push(venda);
+            alert("Venda adicionada com sucesso!");
+
+            // Limpa o formulário
+            document.querySelectorAll("#form input").forEach(input => input.value = "");
+        }
+
+        // Função para listar vendas
+        function listarVendas() {
+            const vendasList = document.getElementById("vendasList");
+            vendasList.innerHTML = "<h2>Lista de Vendas</h2>";
+
+            if (vendas.length === 0) {
+                vendasList.innerHTML += "<p>Nenhuma venda cadastrada.</p>";
+                return;
+            }
+
+            vendas.forEach((venda, index) => {
+                vendasList.innerHTML += `
+                    <div>
+                        <strong>Venda #${index + 1}</strong><br>
+                        Número: ${venda.numero}<br>
+                        Data: ${venda.data}<br>
+                        Cliente: ${venda.cliente}<br>
+                        Vendedor: ${venda.vendedor}<br>
+                        Veículo: ${venda.veiculo}<br>
+                        Valor Entrada: R$${venda.valorEntrada.toFixed(2)}<br>
+                        Valor Financiado: R$${venda.valorFinanciado.toFixed(2)}<br>
+                        Valor Total: R$${venda.valorTotal.toFixed(2)}
+                        <hr>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
