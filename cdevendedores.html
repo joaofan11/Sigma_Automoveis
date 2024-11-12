@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciamento de Vendedores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .form-container, .table-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .btn {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #7cb3a3;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: #f19681;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #7cb3a3;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gerenciamento de Vendedores</h1>
+    <nav>
+        <ul>
+            <li><a href="sigma.html">Voltar ao Menu Principal</a></li>
+        </ul>
+    </nav>
+
+    <div class="form-container">
+        <h2>Adicionar Vendedor</h2>
+        <form id="vendedorForm">
+            <label for="codigo">Código do Vendedor:</label>
+            <input type="text" id="codigo" required>
+
+            <label for="usuario">Nome de Usuário:</label>
+            <input type="text" id="usuario" required>
+
+            <button type="button" class="btn" onclick="adicionarVendedor()">Adicionar Vendedor</button>
+        </form>
+    </div>
+
+    <div class="table-container">
+        <h2>Lista de Vendedores</h2>
+        <table id="vendedoresTable">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Usuário</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Os dados dos vendedores serão inseridos aqui -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        const vendedores = [];
+
+        function adicionarVendedor() {
+            const codigo = document.getElementById("codigo").value;
+            const usuario = document.getElementById("usuario").value;
+
+            const vendedor = { codigo, usuario };
+            vendedores.push(vendedor);
+            atualizarTabela();
+            document.getElementById("vendedorForm").reset();
+        }
+
+        function atualizarTabela() {
+            const tbody = document.getElementById("vendedoresTable").querySelector("tbody");
+            tbody.innerHTML = "";
+
+            vendedores.forEach(vendedor => {
+                const row = document.createElement("tr");
+
+                const codigoCell = document.createElement("td");
+                codigoCell.textContent = vendedor.codigo;
+                row.appendChild(codigoCell);
+
+                const usuarioCell = document.createElement("td");
+                usuarioCell.textContent = vendedor.usuario;
+                row.appendChild(usuarioCell);
+
+                tbody.appendChild(row);
+            });
+        }
+    </script>
+
+</body>
+</html>
