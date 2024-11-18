@@ -31,7 +31,10 @@ def adicionar_cliente():
     if request.method == 'POST':
         cpf = request.form['cpf']
         nome = request.form['nome']
-        endereco = request.form['endereco']
+        rua = request.form['rua']
+        endereco_bairro =  request.form['endereco_bairro']
+        endereco_cidade = request.form['endereco_cidade']
+        endereco_estado = request.form['endereco_estado']
         telefone_residencial = request.form['telefone_residencial']
         celular = request.form['celular']
         renda = request.form['renda']
