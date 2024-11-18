@@ -1,22 +1,50 @@
-# vendedor.py
-import json
-from data_manager import salvar_dados, carregar_dados
+#mudei
+from flask import Flask, request, render_template, jsonify
+import mysql.connector
+from mysql.connector import Error
 
-vendedores = carregar_dados('vendedores.json')
+app = Flask(__name__)
 
-class Vendedor:
-    def __init__(self, codigo, usuario):
-        self.codigo = codigo
-        self.usuario = usuario
+# Conexão com o banco de dados
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",           # Substitua pelo seu usuário
+        password="sua_senha",  # Substitua pela sua senha
+        database="rede_sigma"  # Substitua pelo nome do banco
+    )
 
-def adicionar_vendedor():
-    codigo = input("Digite o código do vendedor: ")
-    usuario = input("Digite o nome de usuário do vendedor: ")
-
-    vendedor = Vendedor(codigo, usuario)
-    vendedores.append(vendedor.__dict__)
-    salvar_dados('vendedores.json', vendedores)
-
+# Rota para listar vendedores
+@app.route('/vendedores', methods=['GET'])
 def listar_vendedores():
-    for vendedor in vendedores:
-        print(f"Código: {vendedor['codigo']}, Usuário: {vendedor['usuario']}")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM vendedores ORDER BY usuario")
+    vendedores = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('vendedores.html', vendedores=vendedores)
+
+# Rota para adicionar um vendedor
+@app.route('/vendedores/adicionar', methods=['POST'])
+def adicionar_vendedor():
+    data = request.get_json()
+    codigo = data['codigo']
+    usuario = data['usuario']
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO vendedores (codigo, usuario) VALUES (%s, %s)",
+            (codigo, usuario)
+        )
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"message": "Vendedor adicionado com sucesso!"}), 201
+    except Error as e:
+        return jsonify({"error": str(e)}), 400
+
+if __name__ == '__main__':
+    app.run(debug=True)

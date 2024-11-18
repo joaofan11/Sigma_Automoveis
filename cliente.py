@@ -1,4 +1,5 @@
 # app.py
+# mudei
 from flask import Flask, request, render_template, jsonify
 import mysql.connector
 from mysql.connector import Error
