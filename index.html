@@ -6,6 +6,18 @@
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="Index.css">
 </head>
+<script>
+    fetch('/clientes')  // Fazendo uma requisição para o Python
+        .then(response => response.json())
+        .then(data => {
+            let clientesList = document.getElementById('clientes-list');
+            data.forEach(cliente => {
+                let li = document.createElement('li');
+                li.textContent = `${cliente.nome} - ${cliente.cpf}`;
+                clientesList.appendChild(li);
+            });
+        });
+</script>
 <body>
     <div class="container">
         <nav class="sidebar">

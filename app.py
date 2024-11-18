@@ -1,18 +1,33 @@
+import mysql.connector
 from flask import Flask, render_template, request, jsonify
-from data_manager import carregar_dados, salvar_dados
 
 app = Flask(__name__)
 
+# Função para conectar ao banco de dados MySQL
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",         # Seu usuário do MySQL
+        password="sua_senha",  # Sua senha do MySQL
+        database="rede_sigma"  # Nome do banco de dados
+    )
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 # Rotas para clientes
-@app.route('/clientes', methods=['GET', 'POST'])
+@app.route('/clientes')
 def clientes():
-    clientes = carregar_dados('clientes.json')
-    if request.method == 'POST':
-        novo_cliente = request.json
-        clientes.append(novo_cliente)
-        salvar_dados('clientes.json', clientes)
-        return jsonify({"message": "Cliente adicionado com sucesso!"}), 201
-    return jsonify(clientes), 200
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT nome, cpf FROM clientes")
+    clientes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return jsonify(clientes)
+
 
 # Rotas para montadoras
 @app.route('/montadoras', methods=['GET', 'POST'])

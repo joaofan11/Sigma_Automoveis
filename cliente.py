@@ -1,31 +1,54 @@
-# cliente.py
-import json
-from data_manager import salvar_dados, carregar_dados
+# app.py
+from flask import Flask, request, render_template, jsonify
+import mysql.connector
+from mysql.connector import Error
 
-clientes = carregar_dados('clientes.json')
+app = Flask(__name__)
 
-class Cliente:
-    def __init__(self, cpf, nome, endereco, telefone_residencial, celular, renda):
-        self.cpf = cpf
-        self.nome = nome
-        self.endereco = endereco
-        self.telefone_residencial = telefone_residencial
-        self.celular = celular
-        self.renda = renda
+# Função para conectar ao banco de dados
+def get_db_connection():
+    return mysql.connector.connect(
+        host="localhost",
+        user="root",         # Seu usuário do MySQL
+        password="sua_senha",  # Sua senha do MySQL
+        database="rede_sigma"  # Nome do banco de dados
+    )
 
-def adicionar_cliente():
-    cpf = input("Digite o CPF: ")
-    nome = input("Digite o nome: ")
-    endereco = input("Digite o endereço (bairro, cidade, estado): ")
-    telefone_residencial = input("Digite o telefone residencial: ")
-    celular = input("Digite o celular: ")
-    renda = input("Digite a renda: ")
-
-    cliente = Cliente(cpf, nome, endereco, telefone_residencial, celular, renda)
-    clientes.append(cliente.__dict__)
-    salvar_dados('clientes.json', clientes)
-
+# Rota para listar clientes
+@app.route('/clientes', methods=['GET'])
 def listar_clientes():
-    clientes_ordenados = sorted(clientes, key=lambda x: x['nome'])
-    for cliente in clientes_ordenados:
-        print(f"CPF: {cliente['cpf']}, Nome: {cliente['nome']}, Renda: {cliente['renda']}")
+    conn = get_db_connection()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM clientes ORDER BY nome")
+    clientes = cursor.fetchall()
+    cursor.close()
+    conn.close()
+    return render_template('07.Controle de Clientes.html', clientes=clientes)
+
+# Rota para adicionar um cliente
+@app.route('/clientes/adicionar', methods=['GET', 'POST'])
+def adicionar_cliente():
+    if request.method == 'POST':
+        cpf = request.form['cpf']
+        nome = request.form['nome']
+        endereco = request.form['endereco']
+        telefone_residencial = request.form['telefone_residencial']
+        celular = request.form['celular']
+        renda = request.form['renda']
+
+        # Inserir o cliente no banco de dados
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT INTO clientes (cpf, nome, endereco_bairro, endereco_cidade, endereco_estado, telefone_residencial, celular, renda)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (cpf, nome, *endereco.split(','), telefone_residencial, celular, renda))
+        conn.commit()
+        cursor.close()
+        conn.close()
+        return jsonify({"message": "Cliente adicionado com sucesso!"}), 201
+    return render_template('07.Controle de Clientes.html')
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
