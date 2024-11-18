@@ -137,17 +137,17 @@ tbody td {
     padding: 10px 20px;
     margin-top: 10px;
 }
-.action-btn {
-    padding: 10px;
-    margin: 10px;
-    cursor: pointer;
+.delete-btn, .edit-btn {
     border: none;
-    background-color: #000000;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+.delete-btn {
+    background-color: red;
     color: white;
 }
-.table-container button {
-    background-color: blue; /* Editar */
-    margin: 5px;
+.edit-btn {
+    background-color: blue;
+    color: white;
 }
-.table-container button.delete {
-    background-color: #dc3545; /* Excluir */
