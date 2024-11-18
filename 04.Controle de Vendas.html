@@ -3,8 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rede Sigma de Automóveis</title>
+    <title>Controle de Vendas</title>
     <link rel="stylesheet" href="04.Controle de Vendas.css">
+    <script>
+        let linhaAtual = null; // Para rastrear a linha em edição
+
+        function abrirModal(tipo, linha = null) {
+            if (tipo === 'novaVenda') {
+                document.getElementById('modal').style.display = 'flex';
+                limparCampos();
+            } else if (tipo === 'editarVenda' && linha) {
+                document.getElementById('modal').style.display = 'flex';
+                linhaAtual = linha;
+                preencherCampos(linha);
+            }
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function limparCampos() {
+            document.getElementById('cliente').value = '';
+            document.getElementById('vendedor').value = '';
+            document.getElementById('veiculo').value = '';
+            document.getElementById('valorEntrada').value = '';
+            document.getElementById('valorFinanciado').value = '';
+            document.getElementById('valorTotal').value = '';
+            document.getElementById('data').value = '';
+        }
+
+        function preencherCampos(linha) {
+            const colunas = linha.children;
+            document.getElementById('cliente').value = colunas[0].innerText;
+            document.getElementById('vendedor').value = colunas[1].innerText;
+            document.getElementById('veiculo').value = colunas[2].innerText;
+            document.getElementById('valorEntrada').value = colunas[3].innerText;
+            document.getElementById('valorFinanciado').value = colunas[4].innerText;
+            document.getElementById('valorTotal').value = colunas[5].innerText;
+            document.getElementById('data').value = colunas[6].innerText;
+        }
+
+        function salvarVenda() {
+            const cliente = document.getElementById('cliente').value;
+            const vendedor = document.getElementById('vendedor').value;
+            const veiculo = document.getElementById('veiculo').value;
+            const valorEntrada = document.getElementById('valorEntrada').value;
+            const valorFinanciado = document.getElementById('valorFinanciado').value;
+            const valorTotal = document.getElementById('valorTotal').value;
+            const data = document.getElementById('data').value;
+
+            if (cliente && vendedor && veiculo && valorEntrada && valorFinanciado && valorTotal && data) {
+                if (linhaAtual) {
+                    // Atualizar a linha existente
+                    const colunas = linhaAtual.children;
+                    colunas[0].innerText = cliente;
+                    colunas[1].innerText = vendedor;
+                    colunas[2].innerText = veiculo;
+                    colunas[3].innerText = valorEntrada;
+                    colunas[4].innerText = valorFinanciado;
+                    colunas[5].innerText = valorTotal;
+                    colunas[6].innerText = data;
+                } else {
+                    // Adicionar nova linha
+                    const tabela = document.querySelector('table tbody');
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${cliente}</td>
+                        <td>${vendedor}</td>
+                        <td>${veiculo}</td>
+                        <td>${valorEntrada}</td>
+                        <td>${valorFinanciado}</td>
+                        <td>${valorTotal}</td>
+                        <td>${data}</td>
+                        <td>
+                            <button class="edit-btn" onclick="abrirModal('editarVenda', this.parentElement.parentElement)">Editar</button>
+                            <button class="delete-btn" onclick="excluirLinha(this)">Excluir</button>
+                        </td>
+                    `;
+                    tabela.appendChild(novaLinha);
+                }
+                fecharModal();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        function excluirLinha(botao) {
+            const linha = botao.parentElement.parentElement;
+            linha.remove();
+        }
+
+        function buscarTabela() {
+            const filtro = document.getElementById('busca').value.toLowerCase();
+            const linhas = document.querySelectorAll('table tbody tr');
+
+            linhas.forEach(linha => {
+                const textoLinha = linha.innerText.toLowerCase();
+                linha.style.display = textoLinha.includes(filtro) ? '' : 'none';
+            });
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -27,23 +126,21 @@
         </aside>
         <main class="main-content">
             <header class="header">
-                <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn">Nova Venda</button>
-                <button class="action-btn">Excluir</button>
+                <input type="text" id="busca" class="search-bar" placeholder="Buscar..." onkeyup="buscarTabela()">
+                <button class="action-btn" onclick="abrirModal('novaVenda')">Nova Venda</button>
             </header>
             <section class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Código</th>
-                            <th>Vendedor</th>
                             <th>Cliente</th>
+                            <th>Vendedor</th>
                             <th>Veículo</th>
-                            <th>Marca</th>
-                            <th>Data</th>
                             <th>Valor de Entrada</th>
                             <th>Valor Financiado</th>
                             <th>Valor Total</th>
+                            <th>Data</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,6 +149,21 @@
                 </table>
             </section>
         </main>
+    </div>
+    <!-- Modal para adicionar ou editar venda -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Venda</h2>
+            <input type="text" id="cliente" placeholder="Cliente" required>
+            <input type="text" id="vendedor" placeholder="Vendedor" required>
+            <input type="text" id="veiculo" placeholder="Veículo" required>
+            <input type="number" id="valorEntrada" placeholder="Valor de Entrada" required>
+            <input type="number" id="valorFinanciado" placeholder="Valor Financiado" required>
+            <input type="number" id="valorTotal" placeholder="Valor Total" required>
+            <input type="date" id="data" required>
+            <button onclick="salvarVenda()">Salvar</button>
+            <button onclick="fecharModal()">Cancelar</button>
+        </div>
     </div>
 </body>
 </html>

@@ -5,6 +5,101 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="07.Controle de Clientes.css">
+    </style>
+    <script>
+        let editIndex = null; // Para armazenar o índice da linha editada
+
+        // Função para abrir o modal para cadastro de cliente
+        function abrirModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'flex';
+            editIndex = null; // Resetar o índice de edição
+        }
+
+        // Função para abrir o modal de edição
+        function editarCliente(index) {
+            editIndex = index;
+            const row = document.querySelectorAll('table tbody tr')[index];
+            document.getElementById('cpf').value = row.cells[0].textContent;
+            document.getElementById('nome').value = row.cells[1].textContent;
+            document.getElementById('rua').value = row.cells[2].textContent;
+            document.getElementById('bairro').value = row.cells[3].textContent;
+            document.getElementById('numero').value = row.cells[4].textContent;
+            document.getElementById('cidade').value = row.cells[5].textContent;
+            document.getElementById('estado').value = row.cells[6].textContent;
+            document.getElementById('telefone').value = row.cells[7].textContent;
+            document.getElementById('celular').value = row.cells[8].textContent;
+            document.getElementById('renda').value = row.cells[9].textContent;
+            document.getElementById('modalCadastro').style.display = 'flex';
+        }
+
+        // Função para excluir um cliente
+        function excluirCliente(index) {
+            if (confirm('Tem certeza que deseja excluir este cliente?')) {
+                const tabela = document.querySelector('table tbody');
+                tabela.deleteRow(index);
+            }
+        }
+
+        // Função para cadastrar ou editar cliente
+        function salvarCliente() {
+            const cpf = document.getElementById('cpf').value;
+            const nome = document.getElementById('nome').value;
+            const rua = document.getElementById('rua').value;
+            const bairro = document.getElementById('bairro').value;
+            const numero = document.getElementById('numero').value;
+            const cidade = document.getElementById('cidade').value;
+            const estado = document.getElementById('estado').value;
+            const telefone = document.getElementById('telefone').value;
+            const celular = document.getElementById('celular').value;
+            const renda = document.getElementById('renda').value;
+
+            if (cpf && nome && rua && bairro && numero && cidade && estado && telefone && celular && renda) {
+                const tabela = document.querySelector('table tbody');
+                if (editIndex !== null) {
+                    // Editando a linha existente
+                    const row = tabela.rows[editIndex];
+                    row.cells[0].textContent = cpf;
+                    row.cells[1].textContent = nome;
+                    row.cells[2].textContent = rua;
+                    row.cells[3].textContent = bairro;
+                    row.cells[4].textContent = numero;
+                    row.cells[5].textContent = cidade;
+                    row.cells[6].textContent = estado;
+                    row.cells[7].textContent = telefone;
+                    row.cells[8].textContent = celular;
+                    row.cells[9].textContent = renda;
+                } else {
+                    // Cadastrando um novo cliente
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${cpf}</td>
+                        <td>${nome}</td>
+                        <td>${rua}</td>
+                        <td>${bairro}</td>
+                        <td>${numero}</td>
+                        <td>${cidade}</td>
+                        <td>${estado}</td>
+                        <td>${telefone}</td>
+                        <td>${celular}</td>
+                        <td>${renda}</td>
+                        <td>
+                            <button class="action-btn" onclick="editarCliente(${tabela.rows.length})">Editar</button>
+                            <button class="action-btn delete" onclick="excluirCliente(${tabela.rows.length})">Excluir</button>
+                        </td>
+                    `;
+                    tabela.appendChild(novaLinha);
+                }
+                fecharModalCadastro();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        // Função para fechar o modal
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -28,8 +123,7 @@
         <main class="main-content">
             <header class="header">
                 <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn">Cadastrar</button>
-                <button class="action-btn">Excluir</button>
+                <button class="action-btn" onclick="abrirModalCadastro()">Cadastrar</button>
             </header>
             <section class="table-container">
                 <table>
@@ -43,9 +137,9 @@
                             <th>Cidade</th>
                             <th>Estado</th>
                             <th>Telefone</th>
-                            <th>Telefone</th>
                             <th>Celular</th>
                             <th>Renda</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +148,25 @@
                 </table>
             </section>
         </main>
+    </div>
+
+    <!-- Modal para Cadastro de Cliente -->
+    <div class="modal" id="modalCadastro">
+        <div class="modal-content">
+            <h2>Cadastrar Cliente</h2>
+            <input type="text" id="cpf" placeholder="CPF" required>
+            <input type="text" id="nome" placeholder="Nome" required>
+            <input type="text" id="rua" placeholder="Rua" required>
+            <input type="text" id="bairro" placeholder="Bairro" required>
+            <input type="text" id="numero" placeholder="Número" required>
+            <input type="text" id="cidade" placeholder="Cidade" required>
+            <input type="text" id="estado" placeholder="Estado" required>
+            <input type="text" id="telefone" placeholder="Telefone" required>
+            <input type="text" id="celular" placeholder="Celular" required>
+            <input type="number" id="renda" placeholder="Renda" required>
+            <button onclick="salvarCliente()">Salvar</button>
+            <button onclick="fecharModalCadastro()">Cancelar</button>
+        </div>
     </div>
 </body>
 </html>

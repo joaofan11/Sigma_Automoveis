@@ -5,6 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="07.Controle de Clientes.css">
+    <script>
+        let editIndex = null; // Para armazenar o índice da linha editada
+
+        // Função para abrir o modal para cadastro
+        function abrirModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'flex';
+            editIndex = null; // Resetar o índice de edição
+        }
+
+        // Função para abrir o modal de edição
+        function editarRegistro(index) {
+            editIndex = index;
+            const row = document.querySelectorAll('table tbody tr')[index];
+            document.getElementById('cnpj').value = row.cells[0].textContent;
+            document.getElementById('razaoSocial').value = row.cells[1].textContent;
+            document.getElementById('marca').value = row.cells[2].textContent;
+            document.getElementById('telefone').value = row.cells[3].textContent;
+            document.getElementById('celular').value = row.cells[4].textContent;
+            document.getElementById('endereco').value = row.cells[5].textContent;
+            document.getElementById('modalCadastro').style.display = 'flex';
+        }
+
+        // Função para excluir um registro
+        function excluirRegistro(index) {
+            if (confirm('Tem certeza que deseja excluir este registro?')) {
+                const tabela = document.querySelector('table tbody');
+                tabela.deleteRow(index);
+            }
+        }
+
+        // Função para salvar o cadastro ou editar um registro
+        function salvarRegistro() {
+            const cnpj = document.getElementById('cnpj').value;
+            const razaoSocial = document.getElementById('razaoSocial').value;
+            const marca = document.getElementById('marca').value;
+            const telefone = document.getElementById('telefone').value;
+            const celular = document.getElementById('celular').value;
+            const endereco = document.getElementById('endereco').value;
+
+            if (cnpj && razaoSocial && marca && telefone && celular && endereco) {
+                const tabela = document.querySelector('table tbody');
+                if (editIndex !== null) {
+                    // Editando a linha existente
+                    const row = tabela.rows[editIndex];
+                    row.cells[0].textContent = cnpj;
+                    row.cells[1].textContent = razaoSocial;
+                    row.cells[2].textContent = marca;
+                    row.cells[3].textContent = telefone;
+                    row.cells[4].textContent = celular;
+                    row.cells[5].textContent = endereco;
+                } else {
+                    // Cadastrando um novo registro
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${cnpj}</td>
+                        <td>${razaoSocial}</td>
+                        <td>${marca}</td>
+                        <td>${telefone}</td>
+                        <td>${celular}</td>
+                        <td>${endereco}</td>
+                        <td>
+                            <button class="action-btn" onclick="editarRegistro(${tabela.rows.length})">Editar</button>
+                            <button class="action-btn delete" onclick="excluirRegistro(${tabela.rows.length})">Excluir</button>
+                        </td>
+                    `;
+                    tabela.appendChild(novaLinha);
+                }
+                fecharModalCadastro();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        // Função para fechar o modal
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -28,8 +106,7 @@
         <main class="main-content">
             <header class="header">
                 <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn">Cadastrar</button>
-                <button class="action-btn">Excluir</button>
+                <button class="action-btn" onclick="abrirModalCadastro()">Cadastrar</button>
             </header>
             <section class="table-container">
                 <table>
@@ -49,6 +126,21 @@
                 </table>
             </section>
         </main>
+    </div>
+
+    <!-- Modal para Cadastro -->
+    <div class="modal" id="modalCadastro">
+        <div class="modal-content">
+            <h2>Cadastrar Cliente</h2>
+            <input type="text" id="cnpj" placeholder="CNPJ" required>
+            <input type="text" id="razaoSocial" placeholder="Razão Social" required>
+            <input type="text" id="marca" placeholder="Marca" required>
+            <input type="text" id="telefone" placeholder="Telefone" required>
+            <input type="text" id="celular" placeholder="Celular" required>
+            <input type="text" id="endereco" placeholder="Endereço" required>
+            <button onclick="salvarRegistro()">Salvar</button>
+            <button onclick="fecharModalCadastro()">Cancelar</button>
+        </div>
     </div>
 </body>
 </html>

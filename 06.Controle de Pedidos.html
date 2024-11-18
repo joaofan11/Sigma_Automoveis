@@ -5,6 +5,104 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="06.Controle de Pedidos.css">
+    <script>
+        let editIndex = null; // Para armazenar o índice da linha editada
+
+        // Função para abrir o modal para nova venda
+        function abrirModalVenda() {
+            document.getElementById('modalVenda').style.display = 'flex';
+            editIndex = null; // Resetar o índice de edição
+        }
+
+        // Função para abrir o modal de edição
+        function editarVenda(index) {
+            editIndex = index;
+            const row = document.querySelectorAll('table tbody tr')[index];
+            document.getElementById('pedido').value = row.cells[0].textContent;
+            document.getElementById('vendedor').value = row.cells[1].textContent;
+            document.getElementById('cliente').value = row.cells[2].textContent;
+            document.getElementById('data').value = row.cells[3].textContent;
+            document.getElementById('veiculo').value = row.cells[4].textContent;
+            document.getElementById('modelo').value = row.cells[5].textContent;
+            document.getElementById('montadora').value = row.cells[6].textContent;
+            document.getElementById('cor').value = row.cells[7].textContent;
+            document.getElementById('ano').value = row.cells[8].textContent;
+            document.getElementById('acessorios').value = row.cells[9].textContent;
+            document.getElementById('valor').value = row.cells[10].textContent;
+            document.getElementById('modalVenda').style.display = 'flex';
+        }
+
+        // Função para excluir uma venda
+        function excluirVenda(index) {
+            if (confirm('Tem certeza que deseja excluir esta venda?')) {
+                const tabela = document.querySelector('table tbody');
+                tabela.deleteRow(index);
+            }
+        }
+
+        // Função para cadastrar nova venda ou editar
+        function salvarVenda() {
+            const pedido = document.getElementById('pedido').value;
+            const vendedor = document.getElementById('vendedor').value;
+            const cliente = document.getElementById('cliente').value;
+            const data = document.getElementById('data').value;
+            const veiculo = document.getElementById('veiculo').value;
+            const modelo = document.getElementById('modelo').value;
+            const montadora = document.getElementById('montadora').value;
+            const cor = document.getElementById('cor').value;
+            const ano = document.getElementById('ano').value;
+            const acessorios = document.getElementById('acessorios').value;
+            const valor = document.getElementById('valor').value;
+
+            if (pedido && vendedor && cliente && data && veiculo && modelo && montadora && cor && ano && acessorios && valor) {
+                const tabela = document.querySelector('table tbody');
+                if (editIndex !== null) {
+                    // Editando a linha existente
+                    const row = tabela.rows[editIndex];
+                    row.cells[0].textContent = pedido;
+                    row.cells[1].textContent = vendedor;
+                    row.cells[2].textContent = cliente;
+                    row.cells[3].textContent = data;
+                    row.cells[4].textContent = veiculo;
+                    row.cells[5].textContent = modelo;
+                    row.cells[6].textContent = montadora;
+                    row.cells[7].textContent = cor;
+                    row.cells[8].textContent = ano;
+                    row.cells[9].textContent = acessorios;
+                    row.cells[10].textContent = valor;
+                } else {
+                    // Cadastrando uma nova venda
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${pedido}</td>
+                        <td>${vendedor}</td>
+                        <td>${cliente}</td>
+                        <td>${data}</td>
+                        <td>${veiculo}</td>
+                        <td>${modelo}</td>
+                        <td>${montadora}</td>
+                        <td>${cor}</td>
+                        <td>${ano}</td>
+                        <td>${acessorios}</td>
+                        <td>${valor}</td>
+                        <td>
+                            <button class="action-btn" onclick="editarVenda(${tabela.rows.length})">Editar</button>
+                            <button class="action-btn delete" onclick="excluirVenda(${tabela.rows.length})">Excluir</button>
+                        </td>
+                    `;
+                    tabela.appendChild(novaLinha);
+                }
+                fecharModalVenda();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        // Função para fechar o modal
+        function fecharModalVenda() {
+            document.getElementById('modalVenda').style.display = 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -28,8 +126,7 @@
         <main class="main-content">
             <header class="header">
                 <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn">Nova Venda</button>
-                <button class="action-btn">Excluir</button>
+                <button class="action-btn" onclick="abrirModalVenda()">Nova Venda</button>
             </header>
             <section class="table-container">
                 <table>
@@ -46,6 +143,7 @@
                             <th>Ano</th>
                             <th>Acessórios</th>
                             <th>Valor</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -54,6 +152,26 @@
                 </table>
             </section>
         </main>
+    </div>
+
+    <!-- Modal para Nova Venda -->
+    <div class="modal" id="modalVenda">
+        <div class="modal-content">
+            <h2>Nova Venda</h2>
+            <input type="text" id="pedido" placeholder="Número do Pedido" required>
+            <input type="text" id="vendedor" placeholder="Vendedor" required>
+            <input type="text" id="cliente" placeholder="Cliente" required>
+            <input type="date" id="data" placeholder="Data" required>
+            <input type="text" id="veiculo" placeholder="Veículo" required>
+            <input type="text" id="modelo" placeholder="Modelo" required>
+            <input type="text" id="montadora" placeholder="Montadora" required>
+            <input type="text" id="cor" placeholder="Cor" required>
+            <input type="number" id="ano" placeholder="Ano" required>
+            <input type="text" id="acessorios" placeholder="Acessórios" required>
+            <input type="number" id="valor" placeholder="Valor" required>
+            <button onclick="salvarVenda()">Salvar</button>
+            <button onclick="fecharModalVenda()">Cancelar</button>
+        </div>
     </div>
 </body>
 </html>

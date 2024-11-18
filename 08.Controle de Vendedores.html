@@ -5,6 +5,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="07.Controle de Clientes.css">
+    <script>
+        let editIndex = null; // Para armazenar o índice da linha editada
+
+        // Função para abrir o modal para cadastro de venda
+        function abrirModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'flex';
+            editIndex = null; // Resetar o índice de edição
+        }
+
+        // Função para abrir o modal de edição
+        function editarVenda(index) {
+            editIndex = index;
+            const row = document.querySelectorAll('table tbody tr')[index];
+            document.getElementById('codigo').value = row.cells[0].textContent;
+            document.getElementById('vendedor').value = row.cells[1].textContent;
+            document.getElementById('modalCadastro').style.display = 'flex';
+        }
+
+        // Função para excluir uma venda
+        function excluirVenda(index) {
+            if (confirm('Tem certeza que deseja excluir esta venda?')) {
+                const tabela = document.querySelector('table tbody');
+                tabela.deleteRow(index);
+            }
+        }
+
+        // Função para cadastrar ou editar venda
+        function salvarVenda() {
+            const codigo = document.getElementById('codigo').value;
+            const vendedor = document.getElementById('vendedor').value;
+
+            if (codigo && vendedor) {
+                const tabela = document.querySelector('table tbody');
+                if (editIndex !== null) {
+                    // Editando a linha existente
+                    const row = tabela.rows[editIndex];
+                    row.cells[0].textContent = codigo;
+                    row.cells[1].textContent = vendedor;
+                } else {
+                    // Cadastrando uma nova venda
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${codigo}</td>
+                        <td>${vendedor}</td>
+                        <td>
+                            <button class="action-btn" onclick="editarVenda(${tabela.rows.length})">Editar</button>
+                            <button class="action-btn delete" onclick="excluirVenda(${tabela.rows.length})">Excluir</button>
+                        </td>
+                    `;
+                    tabela.appendChild(novaLinha);
+                }
+                fecharModalCadastro();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        // Função para fechar o modal
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'none';
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -28,8 +90,7 @@
         <main class="main-content">
             <header class="header">
                 <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn">Cadastrar</button>
-                <button class="action-btn">Excluir</button>
+                <button class="action-btn" onclick="abrirModalCadastro()">Cadastrar Venda</button>
             </header>
             <section class="table-container">
                 <table>
@@ -45,6 +106,17 @@
                 </table>
             </section>
         </main>
+    </div>
+
+    <!-- Modal para Cadastro de Venda -->
+    <div class="modal" id="modalCadastro">
+        <div class="modal-content">
+            <h2>Cadastrar Venda</h2>
+            <input type="text" id="codigo" placeholder="Código da Venda" required>
+            <input type="text" id="vendedor" placeholder="Vendedor Responsável" required>
+            <button onclick="salvarVenda()">Salvar</button>
+            <button onclick="fecharModalCadastro()">Cancelar</button>
+        </div>
     </div>
 </body>
 </html>

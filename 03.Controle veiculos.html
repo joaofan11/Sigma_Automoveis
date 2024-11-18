@@ -5,6 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="03.Controle veiculos.css">
+    <script>
+        let linhaAtual = null; // Para rastrear a linha em edição
+
+        function abrirModal() {
+            document.getElementById('modal').style.display = 'flex';
+            limparCampos();
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        function limparCampos() {
+            document.getElementById('chassi').value = '';
+            document.getElementById('placa').value = '';
+            document.getElementById('marca').value = '';
+            document.getElementById('modelo').value = '';
+            document.getElementById('anoFabricacao').value = '';
+            document.getElementById('anoModelo').value = '';
+            document.getElementById('cor').value = '';
+            document.getElementById('valor').value = '';
+            document.getElementById('acessorios').value = '';
+        }
+
+        function cadastrarVeiculo() {
+            const chassi = document.getElementById('chassi').value;
+            const placa = document.getElementById('placa').value;
+            const marca = document.getElementById('marca').value;
+            const modelo = document.getElementById('modelo').value;
+            const anoFabricacao = document.getElementById('anoFabricacao').value;
+            const anoModelo = document.getElementById('anoModelo').value;
+            const cor = document.getElementById('cor').value;
+            const valor = document.getElementById('valor').value;
+            const acessorios = document.getElementById('acessorios').value;
+
+            if (chassi && placa && marca && modelo && anoFabricacao && anoModelo && cor && valor) {
+                const tabela = document.querySelector('table tbody');
+                const novaLinha = document.createElement('tr');
+                novaLinha.innerHTML = `
+                    <td>${chassi}</td>
+                    <td>${placa}</td>
+                    <td>${marca}</td>
+                    <td>${modelo}</td>
+                    <td>${anoFabricacao}</td>
+                    <td>${anoModelo}</td>
+                    <td>${cor}</td>
+                    <td>${valor}</td>
+                    <td>${acessorios}</td>
+                    <td>
+                        <button class="edit-btn" onclick="editarVeiculo(this)">Editar</button>
+                        <button class="delete-btn" onclick="excluirVeiculo(this)">Excluir</button>
+                    </td>
+                `;
+                tabela.appendChild(novaLinha);
+                fecharModal();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+
+        function editarVeiculo(botao) {
+            linhaAtual = botao.parentElement.parentElement;
+            const colunas = linhaAtual.children;
+            document.getElementById('chassi').value = colunas[0].innerText;
+            document.getElementById('placa').value = colunas[1].innerText;
+            document.getElementById('marca').value = colunas[2].innerText;
+            document.getElementById('modelo').value = colunas[3].innerText;
+            document.getElementById('anoFabricacao').value = colunas[4].innerText;
+            document.getElementById('anoModelo').value = colunas[5].innerText;
+            document.getElementById('cor').value = colunas[6].innerText;
+            document.getElementById('valor').value = colunas[7].innerText;
+            document.getElementById('acessorios').value = colunas[8].innerText;
+            abrirModal();
+        }
+
+        function excluirVeiculo(botao) {
+            const linha = botao.parentElement.parentElement;
+            linha.remove();
+        }
+    </script>
 </head>
 <body>
     <div class="container">
@@ -22,14 +102,13 @@
                     <li><a href="08.Controle de Vendedores.html">Controle de Vendedores</a></li>
                     <li><a href="09.Controle de Montadora.html">Controle de Montadoras</a></li>
                     <li><a href="index.html">Sair</a></li>
+                </ul>
             </nav>
         </aside>
         <main class="main-content">
             <header class="header">
                 <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn">Cadastrar</button>
-                <button class="action-btn">Editar</button>
-                <button class="action-btn">Excluir</button>
+                <button class="action-btn" onclick="abrirModal()">Cadastrar</button>
             </header>
             <section class="table-container">
                 <table>
@@ -44,14 +123,33 @@
                             <th>Cor</th>
                             <th>Valor</th>
                             <th>Acessórios</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Linhas da tabela podem ser adicionadas aqui -->
+                        <!-- Linhas da tabela serão inseridas aqui -->
                     </tbody>
                 </table>
             </section>
         </main>
+    </div>
+
+    <!-- Modal para cadastro de veículo -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2>Cadastrar Veículo</h2>
+            <input type="text" id="chassi" placeholder="Chassi" required>
+            <input type="text" id="placa" placeholder="Placa" required>
+            <input type="text" id="marca" placeholder="Marca" required>
+            <input type="text" id="modelo" placeholder="Modelo" required>
+            <input type="number" id="anoFabricacao" placeholder="Ano de Fabricação" required>
+            <input type="number" id="anoModelo" placeholder="Ano do Modelo" required>
+            <input type="text" id="cor" placeholder="Cor" required>
+            <input type="number" id="valor" placeholder="Valor" required>
+            <input type="text" id="acessorios" placeholder="Acessórios">
+            <button onclick="cadastrarVeiculo()">Salvar</button>
+            <button onclick="fecharModal()">Cancelar</button>
+        </div>
     </div>
 </body>
 </html>
