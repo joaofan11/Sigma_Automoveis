@@ -1,14 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 
-# Funções de manipulação de dados
-from cliente import adicionar_cliente, listar_clientes
-from montadora import adicionar_montadora, listar_montadoras
-from operacao_compra import adicionar_compra, listar_compras
-from operacao_venda import adicionar_venda, listar_vendas
-from pedido import adicionar_pedido, listar_pedidos
-from veiculo import adicionar_veiculo, listar_veiculos
-from vendendor import adicionar_vendedor, listar_vendedores
+# Simulação de funções de manipulação de dados (importar suas funções reais)
+from .cliente import adicionar_cliente, listar_clientes
+from .montadora import adicionar_montadora, listar_montadoras
+from .operacao_compra import adicionar_compra, listar_compras
+from .operacao_venda import adicionar_venda, listar_vendas
+from .pedido import adicionar_pedido, listar_pedidos
+from .veiculo import adicionar_veiculo, listar_veiculos
+from .vendendor import adicionar_vendedor, listar_vendedores
 
 class RedeSigmaApp(tk.Tk):
     def __init__(self):
@@ -20,7 +20,9 @@ class RedeSigmaApp(tk.Tk):
 
     def create_widgets(self):
         # Estilo personalizado
-        self.configure_style()
+        style = ttk.Style()
+        style.configure("TButton", font=("Helvetica", 12), padding=10)
+        style.configure("TLabel", font=("Helvetica", 16), padding=10, background="#f5f5f5")
 
         # Título do Menu
         ttk.Label(self, text="Menu Principal", font=("Helvetica", 20, "bold"), foreground="#2e86de").pack(pady=20)
@@ -45,12 +47,6 @@ class RedeSigmaApp(tk.Tk):
         # Botão de Sair
         ttk.Button(self, text="Sair", command=self.quit, width=15, style="TButton").pack(pady=20)
 
-    def configure_style(self):
-        """Centraliza a configuração do estilo dos widgets"""
-        style = ttk.Style()
-        style.configure("TButton", font=("Helvetica", 12), padding=10)
-        style.configure("TLabel", font=("Helvetica", 16), padding=10, background="#f5f5f5")
-
     def open_submenu(self, title, fields, add_function, list_function):
         submenu = tk.Toplevel(self)
         submenu.title(title)
@@ -62,19 +58,30 @@ class RedeSigmaApp(tk.Tk):
         form_frame = ttk.Frame(submenu)
         form_frame.pack(pady=10)
 
+        # Dicionário para armazenar as entradas
         entries = {}
-        for field in fields:
+        for idx, field in enumerate(fields):
             label = ttk.Label(form_frame, text=field + ":")
-            label.grid(row=len(entries), column=0, padx=10, pady=5, sticky="e")
+            label.grid(row=idx, column=0, padx=10, pady=5, sticky="e")
             entry = ttk.Entry(form_frame)
-            entry.grid(row=len(entries), column=1, padx=10, pady=5)
+            entry.grid(row=idx, column=1, padx=10, pady=5)
             entries[field] = entry
+
+        # Função para obter os dados dos campos e chamar a função de adicionar
+        def obter_dados():
+            dados = {field: entries[field].get() for field in fields}
+            print("Dados coletados:", dados)  # Verifique os dados no console
+            if not all(dados.values()):
+                print("Erro: Alguns campos estão vazios!")  # Verifica se algum campo está vazio
+                return
+            add_function(dados)  # Chama a função de adicionar com os dados do formulário
+            submenu.destroy()  # Fecha o modal após adicionar
 
         # Botões de Adicionar e Listar
         button_frame = ttk.Frame(submenu)
         button_frame.pack(pady=20)
 
-        ttk.Button(button_frame, text=f"Adicionar {title}", command=lambda: add_function(entries)).grid(row=0, column=0, padx=20)
+        ttk.Button(button_frame, text=f"Adicionar {title}", command=obter_dados).grid(row=0, column=0, padx=20)
         ttk.Button(button_frame, text=f"Listar {title}", command=lambda: self.list_data(submenu, list_function)).grid(row=0, column=1, padx=20)
 
     def list_data(self, parent, list_function):

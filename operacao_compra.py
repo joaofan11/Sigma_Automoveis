@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import MySQLdb
+from .operacao_compra import adicionar_compra, listar_compras  # Adicionando a importação das funções
 
 app = Flask(__name__)
 
@@ -29,27 +30,15 @@ def compras():
     
     if request.method == 'POST':
         dados = request.get_json()
-        query = """
-            INSERT INTO operacoes_compra (numero, data, cliente_id, vendedor_id, veiculo_id, valor)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """
-        cursor.execute(query, (
-            dados['numero'],
-            dados['data'],
-            dados['cliente_id'],
-            dados['vendedor_id'],
-            dados['veiculo_id'],
-            dados['valor']
-        ))
-        db.commit()  # Commit após inserção
-        db.close()   # Fechar a conexão
+        # Usando a função 'adicionar_compra' para registrar a compra
+        adicionar_compra(dados)
+        db.close()  # Fechar a conexão
         return jsonify({'message': 'Compra registrada com sucesso!'})
     
     elif request.method == 'GET':
-        cursor.execute("SELECT * FROM operacoes_compra")
-        compras = cursor.fetchall()
+        compras_data = listar_compras()  # Usando a função 'listar_compras' para pegar as compras
         db.close()  # Fechar a conexão
-        return jsonify(compras)
+        return jsonify(compras_data)
 
 @app.route('/compras/<int:id>', methods=['PUT', 'DELETE'])
 def atualizar_ou_excluir(id):
@@ -75,7 +64,8 @@ def atualizar_ou_excluir(id):
         db.commit()
         db.close()
         return jsonify({'message': 'Compra atualizada com sucesso!'})
-    
+
+
     elif request.method == 'DELETE':
         cursor.execute("DELETE FROM operacoes_compra WHERE id=%s", (id,))
         db.commit()
