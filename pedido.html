@@ -6,6 +6,68 @@
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="pedido.css">
     <script>
+        // Carregar pedidos na tabela
+        async function carregarPedidos() {
+            const resposta = await fetch('/listar_pedidos');
+            const pedidos = await resposta.json();
+            const tabela = document.querySelector('table tbody');
+            tabela.innerHTML = '';
+
+            pedidos.forEach(pedido => {
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                     <td>${pedido}</td>
+                    <td>${vendedor}</td>
+                    <td>${cliente}</td>
+                    <td>${data}</td>
+                    <td>${veiculo}</td>
+                    <td>${modelo}</td>
+                    <td>${montadora}</td>
+                    <td>${cor}</td>
+                    <td>${ano}</td>
+                    <td>${acessorios}</td>
+                    <td>${valor}</td>
+                    <td>
+                `;
+                tabela.appendChild(linha);
+            });
+        }
+
+        // Adicionar novo pedido
+        async function adicionarPedido() {
+            const data = {
+                numero: document.getElementById('numero').value,
+                data: document.getElementById('data').value,
+                cliente_id: document.getElementById('cliente_id').value,
+                vendedor_id: document.getElementById('vendedor_id').value,
+                montadora_id: document.getElementById('montadora_id').value,
+                modelo: document.getElementById('modelo').value,
+                ano: document.getElementById('ano').value,
+                cor: document.getElementById('cor').value,
+                acessorios: document.getElementById('acessorios').value,
+                valor: document.getElementById('valor').value
+            };
+
+            await fetch('/adicionar_pedido', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            carregarPedidos();
+        }
+
+        // Excluir pedido
+        async function excluirPedido(id) {
+            await fetch(`/excluir_pedido/${id}`, { method: 'DELETE' });
+            carregarPedidos();
+        }
+
+        // Inicializar tabela ao carregar a página
+        window.onload = carregarPedidos;
+
+
+        // o codigo acima e novo 
+
         let editIndex = null; // Para armazenar o índice da linha editada
 
         // Função para abrir o modal para nova venda

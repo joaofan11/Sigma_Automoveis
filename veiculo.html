@@ -6,6 +6,69 @@
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="veiculo.css">
     <script>
+      async function carregarVeiculos() {
+            const response = await fetch('/veiculos');
+            const veiculos = await response.json();
+            const tabela = document.querySelector('table tbody');
+            tabela.innerHTML = ""; // Limpa a tabela
+            veiculos.forEach(veiculo => {
+                const linha = document.createElement('tr');
+                linha.innerHTML = `
+                    <td>${veiculo.numero_chassi}</td>
+                    <td>${veiculo.placa}</td>
+                    <td>${veiculo.marca}</td>
+                    <td>${veiculo.modelo}</td>
+                    <td>${veiculo.ano_fabricacao}</td>
+                    <td>${veiculo.ano_modelo}</td>
+                    <td>${veiculo.cor}</td>
+                    <td>${veiculo.valor}</td>
+                    <td>
+                        <button class="delete-btn" onclick="excluirVeiculo(${veiculo.id})">Excluir</button>
+                    </td>
+                `;
+                tabela.appendChild(linha);
+            });
+        }
+
+        async function cadastrarVeiculo() {
+            const veiculo = {
+                chassi: document.getElementById('chassi').value,
+                placa: document.getElementById('placa').value,
+                marca: document.getElementById('marca').value,
+                modelo: document.getElementById('modelo').value,
+                anoFabricacao: document.getElementById('anoFabricacao').value,
+                anoModelo: document.getElementById('anoModelo').value,
+                cor: document.getElementById('cor').value,
+                valor: document.getElementById('valor').value
+            };
+            const response = await fetch('/veiculos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(veiculo)
+            });
+            if (response.ok) {
+                alert('Veículo cadastrado com sucesso!');
+                carregarVeiculos();
+                fecharModal();
+            } else {
+                alert('Erro ao cadastrar veículo.');
+            }
+        }
+
+        async function excluirVeiculo(id) {
+            if (confirm('Deseja realmente excluir este veículo?')) {
+                const response = await fetch(`/veiculos/${id}`, { method: 'DELETE' });
+                if (response.ok) {
+                    alert('Veículo excluído com sucesso!');
+                    carregarVeiculos();
+                } else {
+                    alert('Erro ao excluir veículo.');
+                }
+            }
+        }
+
+        window.onload = carregarVeiculos;
+          
         let linhaAtual = null; // Para rastrear a linha em edição
 
         function abrirModal() {

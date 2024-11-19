@@ -1,34 +1,103 @@
-# operacao_venda.py
-import json
-from data_manager import salvar_dados, carregar_dados
+#mudei
+from flask import Flask, render_template, request, jsonify
+import mysql.connector
 
-vendas = carregar_dados('vendas.json')
+app = Flask(__name__)
 
-class OperacaoVenda:
-    def __init__(self, numero, data, cliente, vendedor, veiculo, valor_entrada, valor_financiado, valor_total):
-        self.numero = numero
-        self.data = data
-        self.cliente = cliente
-        self.vendedor = vendedor
-        self.veiculo = veiculo
-        self.valor_entrada = valor_entrada
-        self.valor_financiado = valor_financiado
-        self.valor_total = valor_total
+# Configuração do banco de dados
+db_config = {
+    'host': 'localhost',
+    'user': 'root',
+    'password': 'senha',
+    'database': 'sistema_vendas'
+}
 
-def adicionar_venda():
-    numero = input("Digite o número da operação: ")
-    data = input("Digite a data: ")
-    cliente = input("Digite o nome do cliente: ")
-    vendedor = input("Digite o nome do vendedor: ")
-    veiculo = input("Digite a placa do veículo: ")
-    valor_entrada = input("Digite o valor de entrada: ")
-    valor_financiado = input("Digite o valor financiado: ")
-    valor_total = input(f"Digite o valor total: ")
+# Conexão com o banco
+def conectar_banco():
+    return mysql.connector.connect(**db_config)
 
-    venda = OperacaoVenda(numero, data, cliente, vendedor, veiculo, valor_entrada, valor_financiado, valor_total)
-    vendas.append(venda.__dict__)
-    salvar_dados('vendas.json', vendas)
+# Rota principal para exibir o HTML
+@app.route('/')
+def index():
+    return render_template('operacao_venda.html')
 
+# Rota para listar as vendas
+@app.route('/vendas', methods=['GET'])
 def listar_vendas():
-    for venda in vendas:
-        print(f"Número: {venda['numero']}, Cliente: {venda['cliente']}, Veículo: {venda['veiculo']}")
+    conexao = conectar_banco()
+    cursor = conexao.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM operacoes_venda")
+    vendas = cursor.fetchall()
+    cursor.close()
+    conexao.close()
+    return jsonify(vendas)
+
+# Rota para adicionar uma nova venda
+@app.route('/vendas', methods=['POST'])
+def adicionar_venda():
+    dados = request.json
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+    query = """
+        INSERT INTO operacoes_venda (numero, data, cliente_id, vendedor_id, veiculo_id, valor_entrada, valor_financiado, valor_total)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    valores = (
+        dados['numero'],
+        dados['data'],
+        dados['cliente_id'],
+        dados['vendedor_id'],
+        dados['veiculo_id'],
+        dados['valor_entrada'],
+        dados['valor_financiado'],
+        dados['valor_total']
+    )
+    cursor.execute(query, valores)
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+    return jsonify({'status': 'Venda adicionada com sucesso'})
+
+# Rota para editar uma venda existente
+@app.route('/vendas/<int:id>', methods=['PUT'])
+def editar_venda(id):
+    dados = request.json
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+    query = """
+        UPDATE operacoes_venda
+        SET numero = %s, data = %s, cliente_id = %s, vendedor_id = %s, veiculo_id = %s, 
+            valor_entrada = %s, valor_financiado = %s, valor_total = %s
+        WHERE id = %s
+    """
+    valores = (
+        dados['numero'],
+        dados['data'],
+        dados['cliente_id'],
+        dados['vendedor_id'],
+        dados['veiculo_id'],
+        dados['valor_entrada'],
+        dados['valor_financiado'],
+        dados['valor_total'],
+        id
+    )
+    cursor.execute(query, valores)
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+    return jsonify({'status': 'Venda editada com sucesso'})
+
+# Rota para excluir uma venda
+@app.route('/vendas/<int:id>', methods=['DELETE'])
+def excluir_venda(id):
+    conexao = conectar_banco()
+    cursor = conexao.cursor()
+    query = "DELETE FROM operacoes_venda WHERE id = %s"
+    cursor.execute(query, (id,))
+    conexao.commit()
+    cursor.close()
+    conexao.close()
+    return jsonify({'status': 'Venda excluída com sucesso'})
+
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,35 +1,51 @@
-# veiculo.py
-import json
-from data_manager import salvar_dados, carregar_dados
+from flask import Flask, render_template, request, jsonify
+import mysql.connector
 
-veiculos = carregar_dados('veiculos.json')
+app = Flask(__name__)
 
-class Veiculo:
-    def __init__(self, chassi, placa, marca, modelo, ano_fabricacao, ano_modelo, cor, valor):
-        self.chassi = chassi
-        self.placa = placa
-        self.marca = marca
-        self.modelo = modelo
-        self.ano_fabricacao = ano_fabricacao
-        self.ano_modelo = ano_modelo
-        self.cor = cor
-        self.valor = valor
+# Configuração da conexão com o MySQL
+db = mysql.connector.connect(
+    host="localhost",
+    user="seu_usuario",
+    password="sua_senha",
+    database="rede_sigma"
+)
 
-def adicionar_veiculo():
-    chassi = input("Digite o número do chassi: ")
-    placa = input("Digite a placa: ")
-    marca = input("Digite a marca: ")
-    modelo = input("Digite o modelo: ")
-    ano_fabricacao = input("Digite o ano de fabricação: ")
-    ano_modelo = input("Digite o ano do modelo: ")
-    cor = input("Digite a cor: ")
-    valor = input("Digite o valor: ")
+cursor = db.cursor(dictionary=True)
 
-    veiculo = Veiculo(chassi, placa, marca, modelo, ano_fabricacao, ano_modelo, cor, valor)
-    veiculos.append(veiculo.__dict__)
-    salvar_dados('veiculos.json', veiculos)
+# Rota para exibir a página principal
+@app.route("/")
+def index():
+    return render_template("index.html")
 
+# Rota para buscar os veículos no banco de dados
+@app.route("/veiculos", methods=["GET"])
 def listar_veiculos():
-    veiculos_ordenados = sorted(veiculos, key=lambda x: (x['marca'], x['modelo']))
-    for veiculo in veiculos_ordenados:
-        print(f"Marca: {veiculo['marca']}, Modelo: {veiculo['modelo']}, Placa: {veiculo['placa']}")
+    cursor.execute("SELECT * FROM veiculos ORDER BY marca, modelo")
+    veiculos = cursor.fetchall()
+    return jsonify(veiculos)
+
+# Rota para adicionar um veículo
+@app.route("/veiculos", methods=["POST"])
+def adicionar_veiculo():
+    data = request.json
+    try:
+        cursor.execute("""
+            INSERT INTO veiculos (numero_chassi, placa, marca, modelo, ano_fabricacao, ano_modelo, cor, valor)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+        """, (data["chassi"], data["placa"], data["marca"], data["modelo"], data["anoFabricacao"],
+              data["anoModelo"], data["cor"], data["valor"]))
+        db.commit()
+        return jsonify({"message": "Veículo adicionado com sucesso!"}), 201
+    except mysql.connector.Error as err:
+        return jsonify({"error": str(err)}), 400
+
+# Rota para excluir um veículo
+@app.route("/veiculos/<int:id>", methods=["DELETE"])
+def excluir_veiculo(id):
+    cursor.execute("DELETE FROM veiculos WHERE id = %s", (id,))
+    db.commit()
+    return jsonify({"message": "Veículo excluído com sucesso!"})
+
+if __name__ == "__main__":
+    app.run(debug=True)

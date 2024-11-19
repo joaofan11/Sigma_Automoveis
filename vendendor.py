@@ -1,4 +1,4 @@
-#mudei
+#Atualizado
 from flask import Flask, request, render_template, jsonify
 import mysql.connector
 from mysql.connector import Error
@@ -23,7 +23,7 @@ def listar_vendedores():
     vendedores = cursor.fetchall()
     cursor.close()
     conn.close()
-    return render_template('vendedores.html', vendedores=vendedores)
+    return render_template('vendedor.html', vendedores=vendedores)
 
 # Rota para adicionar um vendedor
 @app.route('/vendedores/adicionar', methods=['POST'])
