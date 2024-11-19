@@ -1,6 +1,5 @@
 -- Criação do Banco de Dados
-CREATE DATABASE rede_sigma;
-
+CREATE DATABASE IF NOT EXISTS rede_sigma;
 USE rede_sigma;
 
 -- Tabela de Clientes
@@ -13,7 +12,7 @@ CREATE TABLE clientes (
     endereco_estado VARCHAR(2),
     telefone_residencial VARCHAR(15),
     celular VARCHAR(15),
-    renda DECIMAL(10, 2),
+    renda DECIMAL(15, 2),
     INDEX(nome) 
 );
 
@@ -45,7 +44,7 @@ CREATE TABLE veiculos (
     ano_fabricacao INT,
     ano_modelo INT,
     cor VARCHAR(50),
-    valor DECIMAL(10, 2),
+    valor DECIMAL(15, 2),
     INDEX(marca, modelo) 
 );
 
@@ -57,7 +56,7 @@ CREATE TABLE operacoes_compra (
     cliente_id INT,
     vendedor_id INT,
     veiculo_id INT,
-    valor DECIMAL(10, 2),
+    valor DECIMAL(15, 2),
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (vendedor_id) REFERENCES vendedores(id),
     FOREIGN KEY (veiculo_id) REFERENCES veiculos(id)
@@ -71,9 +70,9 @@ CREATE TABLE operacoes_venda (
     cliente_id INT,
     vendedor_id INT,
     veiculo_id INT,
-    valor_entrada DECIMAL(10, 2),
-    valor_financiado DECIMAL(10, 2),
-    valor_total DECIMAL(10, 2),
+    valor_entrada DECIMAL(15, 2),
+    valor_financiado DECIMAL(15, 2),
+    valor_total DECIMAL(15, 2),
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (vendedor_id) REFERENCES vendedores(id),
     FOREIGN KEY (veiculo_id) REFERENCES veiculos(id)
@@ -91,15 +90,14 @@ CREATE TABLE pedidos (
     ano INT,
     cor VARCHAR(50),
     acessorios TEXT,
-    valor DECIMAL(10, 2),
+    valor DECIMAL(15, 2),
     FOREIGN KEY (cliente_id) REFERENCES clientes(id),
     FOREIGN KEY (vendedor_id) REFERENCES vendedores(id),
     FOREIGN KEY (montadora_id) REFERENCES montadoras(id)
 );
 
 -- Consulta de Operações de Venda
-SELECT * FROM operacoes_venda
-;
+SELECT * FROM operacoes_venda;
 
 -- Consulta com JOIN: Dados de Venda com Detalhes do Cliente e Veículo
 SELECT 
@@ -110,22 +108,17 @@ SELECT
     ov.valor_total AS valor_total
 FROM operacoes_venda ov
 JOIN clientes c ON ov.cliente_id = c.id
-JOIN veiculos v ON ov.veiculo_id = v.id
-;
+JOIN veiculos v ON ov.veiculo_id = v.id;
 
 -- Inserção de Pedido
 INSERT INTO pedidos (numero, data, cliente_id, vendedor_id, montadora_id, modelo, ano, cor, acessorios, valor)
 VALUES
-(1, '2024-11-18', 1, 1, 1, 'SUV', 2024, 'Branco', 'Ar condicionado, Teto solar', 150000.00)
-;
+(1, '2024-11-18', 1, 1, 1, 'SUV', 2024, 'Branco', 'Ar condicionado, Teto solar', 150000.00);
 
--- Consulta de Pedidos
-SELECT * FROM pedidos;
-
+-- Tabela para Armazenamento de Dados JSON
 CREATE DATABASE IF NOT EXISTS data_manager;
 USE data_manager;
 
--- Tabela para Armazenamento de Dados JSON
 CREATE TABLE data_store (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_arquivo VARCHAR(255) NOT NULL,
@@ -133,37 +126,19 @@ CREATE TABLE data_store (
     ultima_atualizacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Índice para Pesquisar por Nome do Arquivo
 CREATE INDEX idx_nome_arquivo ON data_store(nome_arquivo);
 
-
+-- Procedimentos Armazenados
 CREATE PROCEDURE salvar_dados(IN nomeArquivo VARCHAR(255), IN dadosJson JSON)
 BEGIN
-    DECLARE arquivoExistente INT;
-
-    -- Verifica se o arquivo já existe
-    SELECT COUNT(*) INTO arquivoExistente
-    FROM data_store
-    WHERE nome_arquivo = nomeArquivo;
-
-    IF arquivoExistente > 0 THEN
-        -- Atualiza o registro existente
-        UPDATE data_store
-        SET dados = dadosJson
-        WHERE nome_arquivo = nomeArquivo;
-    ELSE
-        -- Insere um novo registro
-        INSERT INTO data_store (nome_arquivo, dados)
-        VALUES (nomeArquivo, dadosJson);
-    END IF;
+    INSERT INTO data_store (nome_arquivo, dados)
+    VALUES (nomeArquivo, dadosJson)
+    ON DUPLICATE KEY UPDATE dados = dadosJson;
 END;
-
 
 CREATE PROCEDURE carregar_dados(IN nomeArquivo VARCHAR(255))
 BEGIN
-    -- Retorna os dados JSON associados ao nome do arquivo
     SELECT dados
     FROM data_store
     WHERE nome_arquivo = nomeArquivo;
 END;
-
