@@ -6,168 +6,113 @@
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="pedido.css">
     <script>
-        // Carregar pedidos na tabela
-        async function carregarPedidos() {
-            const resposta = await fetch('/listar_pedidos');
-            const pedidos = await resposta.json();
+        // Função para carregar dados na tabela (pedidos ou vendas)
+        async function carregarTabela(url) {
+            const resposta = await fetch(url);
+            const dados = await resposta.json();
             const tabela = document.querySelector('table tbody');
             tabela.innerHTML = '';
-
-            pedidos.forEach(pedido => {
+            dados.forEach(item => {
                 const linha = document.createElement('tr');
                 linha.innerHTML = `
-                     <td>${pedido}</td>
-                    <td>${vendedor}</td>
-                    <td>${cliente}</td>
-                    <td>${data}</td>
-                    <td>${veiculo}</td>
-                    <td>${modelo}</td>
-                    <td>${montadora}</td>
-                    <td>${cor}</td>
-                    <td>${ano}</td>
-                    <td>${acessorios}</td>
-                    <td>${valor}</td>
+                    <td>${item.numero}</td>
+                    <td>${item.vendedor}</td>
+                    <td>${item.cliente}</td>
+                    <td>${item.data}</td>
+                    <td>${item.veiculo}</td>
+                    <td>${item.modelo}</td>
+                    <td>${item.montadora}</td>
+                    <td>${item.cor}</td>
+                    <td>${item.ano}</td>
+                    <td>${item.acessorios}</td>
+                    <td>${item.valor}</td>
                     <td>
+                        <button class="action-btn" onclick="editarItem(${tabela.rows.length}, '${url}')">Editar</button>
+                        <button class="action-btn delete" onclick="excluirItem(${tabela.rows.length}, '${url}')">Excluir</button>
+                    </td>
                 `;
                 tabela.appendChild(linha);
             });
         }
 
-        // Adicionar novo pedido
-        async function adicionarPedido() {
-            const data = {
-                numero: document.getElementById('numero').value,
-                data: document.getElementById('data').value,
-                cliente_id: document.getElementById('cliente_id').value,
-                vendedor_id: document.getElementById('vendedor_id').value,
-                montadora_id: document.getElementById('montadora_id').value,
-                modelo: document.getElementById('modelo').value,
-                ano: document.getElementById('ano').value,
-                cor: document.getElementById('cor').value,
-                acessorios: document.getElementById('acessorios').value,
-                valor: document.getElementById('valor').value
-            };
-
-            await fetch('/adicionar_pedido', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
-            carregarPedidos();
-        }
-
-        // Excluir pedido
-        async function excluirPedido(id) {
-            await fetch(`/excluir_pedido/${id}`, { method: 'DELETE' });
-            carregarPedidos();
-        }
-
-        // Inicializar tabela ao carregar a página
-        window.onload = carregarPedidos;
-
-
-        // o codigo acima e novo 
-
-        let editIndex = null; // Para armazenar o índice da linha editada
-
-        // Função para abrir o modal para nova venda
-        function abrirModalVenda() {
-            document.getElementById('modalVenda').style.display = 'flex';
-            editIndex = null; // Resetar o índice de edição
-        }
-
-        // Função para abrir o modal de edição
-        function editarVenda(index) {
-            editIndex = index;
-            const row = document.querySelectorAll('table tbody tr')[index];
-            document.getElementById('pedido').value = row.cells[0].textContent;
-            document.getElementById('vendedor').value = row.cells[1].textContent;
-            document.getElementById('cliente').value = row.cells[2].textContent;
-            document.getElementById('data').value = row.cells[3].textContent;
-            document.getElementById('veiculo').value = row.cells[4].textContent;
-            document.getElementById('modelo').value = row.cells[5].textContent;
-            document.getElementById('montadora').value = row.cells[6].textContent;
-            document.getElementById('cor').value = row.cells[7].textContent;
-            document.getElementById('ano').value = row.cells[8].textContent;
-            document.getElementById('acessorios').value = row.cells[9].textContent;
-            document.getElementById('valor').value = row.cells[10].textContent;
-            document.getElementById('modalVenda').style.display = 'flex';
-        }
-
-        // Função para excluir uma venda
-        function excluirVenda(index) {
-            if (confirm('Tem certeza que deseja excluir esta venda?')) {
-                const tabela = document.querySelector('table tbody');
-                tabela.deleteRow(index);
-            }
-        }
-
-        // Função para cadastrar nova venda ou editar
-        function salvarVenda() {
-            const pedido = document.getElementById('pedido').value;
-            const vendedor = document.getElementById('vendedor').value;
-            const cliente = document.getElementById('cliente').value;
-            const data = document.getElementById('data').value;
-            const veiculo = document.getElementById('veiculo').value;
-            const modelo = document.getElementById('modelo').value;
-            const montadora = document.getElementById('montadora').value;
-            const cor = document.getElementById('cor').value;
-            const ano = document.getElementById('ano').value;
-            const acessorios = document.getElementById('acessorios').value;
-            const valor = document.getElementById('valor').value;
-
-            if (pedido && vendedor && cliente && data && veiculo && modelo && montadora && cor && ano && acessorios && valor) {
-                const tabela = document.querySelector('table tbody');
-                if (editIndex !== null) {
-                    // Editando a linha existente
-                    const row = tabela.rows[editIndex];
-                    row.cells[0].textContent = pedido;
-                    row.cells[1].textContent = vendedor;
-                    row.cells[2].textContent = cliente;
-                    row.cells[3].textContent = data;
-                    row.cells[4].textContent = veiculo;
-                    row.cells[5].textContent = modelo;
-                    row.cells[6].textContent = montadora;
-                    row.cells[7].textContent = cor;
-                    row.cells[8].textContent = ano;
-                    row.cells[9].textContent = acessorios;
-                    row.cells[10].textContent = valor;
-                } else {
-                    // Cadastrando uma nova venda
-                    const novaLinha = document.createElement('tr');
-                    novaLinha.innerHTML = `
-                        <td>${pedido}</td>
-                        <td>${vendedor}</td>
-                        <td>${cliente}</td>
-                        <td>${data}</td>
-                        <td>${veiculo}</td>
-                        <td>${modelo}</td>
-                        <td>${montadora}</td>
-                        <td>${cor}</td>
-                        <td>${ano}</td>
-                        <td>${acessorios}</td>
-                        <td>${valor}</td>
-                        <td>
-                            <button class="action-btn" onclick="editarVenda(${tabela.rows.length})">Editar</button>
-                            <button class="action-btn delete" onclick="excluirVenda(${tabela.rows.length})">Excluir</button>
-                        </td>
-                    `;
-                    tabela.appendChild(novaLinha);
-                }
-                fecharModalVenda();
+        // Função para adicionar ou editar um item
+        async function salvarItem(url, method) {
+            const dados = coletarDadosFormulario();
+            if (dados) {
+                await fetch(url, {
+                    method: method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dados)
+                });
+                carregarTabela(url);
+                fecharModal();
             } else {
                 alert('Por favor, preencha todos os campos obrigatórios.');
             }
         }
 
+        // Função para coletar os dados do formulário
+        function coletarDadosFormulario() {
+            return {
+                numero: document.getElementById('pedido').value,
+                vendedor: document.getElementById('vendedor').value,
+                cliente: document.getElementById('cliente').value,
+                data: document.getElementById('data').value,
+                veiculo: document.getElementById('veiculo').value,
+                modelo: document.getElementById('modelo').value,
+                montadora: document.getElementById('montadora').value,
+                cor: document.getElementById('cor').value,
+                ano: document.getElementById('ano').value,
+                acessorios: document.getElementById('acessorios').value,
+                valor: document.getElementById('valor').value
+            };
+        }
+
+        // Função para abrir o modal de edição
+        function editarItem(index, url) {
+            const tabela = document.querySelectorAll('table tbody tr')[index];
+            const item = {
+                numero: tabela.cells[0].textContent,
+                vendedor: tabela.cells[1].textContent,
+                cliente: tabela.cells[2].textContent,
+                data: tabela.cells[3].textContent,
+                veiculo: tabela.cells[4].textContent,
+                modelo: tabela.cells[5].textContent,
+                montadora: tabela.cells[6].textContent,
+                cor: tabela.cells[7].textContent,
+                ano: tabela.cells[8].textContent,
+                acessorios: tabela.cells[9].textContent,
+                valor: tabela.cells[10].textContent
+            };
+            for (const [key, value] of Object.entries(item)) {
+                document.getElementById(key).value = value;
+            }
+            document.getElementById('modalVenda').style.display = 'flex';
+            document.getElementById('salvarBtn').onclick = () => salvarItem(url, 'PUT');
+        }
+
+        // Função para excluir um item
+        async function excluirItem(index, url) {
+            const confirmacao = confirm('Tem certeza que deseja excluir este item?');
+            if (confirmacao) {
+                const id = document.querySelectorAll('table tbody tr')[index].cells[0].textContent;
+                await fetch(`${url}/${id}`, { method: 'DELETE' });
+                carregarTabela(url);
+            }
+        }
+
         // Função para fechar o modal
-        function fecharModalVenda() {
+        function fecharModal() {
             document.getElementById('modalVenda').style.display = 'none';
         }
+
+        // Inicializa a tabela de pedidos ao carregar a página
+        window.onload = () => carregarTabela('/listar_pedidos');
     </script>
 </head>
 <body>
     <div class="container">
+        <!-- Sidebar e navegação -->
         <aside class="sidebar">
             <div class="logo">
                 <img src="logo_sigma.png" alt="Logo">
@@ -182,15 +127,18 @@
                     <li><a href="vendendor.html">Controle de Vendedores</a></li>
                     <li><a href="montadora.html">Controle de Montadoras</a></li>
                     <li><a href="index.html">Sair</a></li>
-
                 </ul>
             </nav>
         </aside>
+
+        <!-- Conteúdo principal -->
         <main class="main-content">
             <header class="header">
                 <input type="text" class="search-bar" placeholder="Buscar...">
-                <button class="action-btn" onclick="abrirModalVenda()">Nova Venda</button>
+                <button class="action-btn" onclick="abrirModalVenda()">Novo Pedido</button>
             </header>
+
+            <!-- Tabela de Pedidos -->
             <section class="table-container">
                 <table>
                     <thead>
@@ -209,14 +157,14 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Linhas da tabela podem ser adicionadas aqui -->
+                        <!-- Linhas da tabela serão preenchidas aqui -->
                     </tbody>
                 </table>
             </section>
         </main>
     </div>
 
-    <!-- Modal para Nova Venda -->
+    <!-- Modal de Nova Venda -->
     <div class="modal" id="modalVenda">
         <div class="modal-content">
             <h2>Nova Venda</h2>
@@ -231,8 +179,8 @@
             <input type="number" id="ano" placeholder="Ano" required>
             <input type="text" id="acessorios" placeholder="Acessórios" required>
             <input type="number" id="valor" placeholder="Valor" required>
-            <button onclick="salvarVenda()">Salvar</button>
-            <button onclick="fecharModalVenda()">Cancelar</button>
+            <button id="salvarBtn" onclick="salvarItem('/adicionar_pedido', 'POST')">Salvar</button>
+            <button onclick="fecharModal()">Cancelar</button>
         </div>
     </div>
 </body>

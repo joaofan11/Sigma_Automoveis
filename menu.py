@@ -1,4 +1,3 @@
-# menu_gui.py
 import tkinter as tk
 from tkinter import ttk
 
@@ -11,7 +10,6 @@ from pedido import adicionar_pedido, listar_pedidos
 from veiculo import adicionar_veiculo, listar_veiculos
 from vendendor import adicionar_vendedor, listar_vendedores
 
-
 class RedeSigmaApp(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -22,9 +20,7 @@ class RedeSigmaApp(tk.Tk):
 
     def create_widgets(self):
         # Estilo personalizado
-        style = ttk.Style()
-        style.configure("TButton", font=("Helvetica", 12), padding=10)
-        style.configure("TLabel", font=("Helvetica", 16), padding=10, background="#f5f5f5")
+        self.configure_style()
 
         # Título do Menu
         ttk.Label(self, text="Menu Principal", font=("Helvetica", 20, "bold"), foreground="#2e86de").pack(pady=20)
@@ -48,6 +44,12 @@ class RedeSigmaApp(tk.Tk):
 
         # Botão de Sair
         ttk.Button(self, text="Sair", command=self.quit, width=15, style="TButton").pack(pady=20)
+
+    def configure_style(self):
+        """Centraliza a configuração do estilo dos widgets"""
+        style = ttk.Style()
+        style.configure("TButton", font=("Helvetica", 12), padding=10)
+        style.configure("TLabel", font=("Helvetica", 16), padding=10, background="#f5f5f5")
 
     def open_submenu(self, title, fields, add_function, list_function):
         submenu = tk.Toplevel(self)

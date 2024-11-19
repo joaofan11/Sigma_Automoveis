@@ -8,31 +8,30 @@
     <script>
         let linhaAtual = null; // Para rastrear a linha em edição
 
+        // Função para abrir o modal e preencher os campos para edição ou limpar para nova venda
         function abrirModal(tipo, linha = null) {
+            const modal = document.getElementById('modal');
+            modal.style.display = 'flex';
+            linhaAtual = linha;
+
             if (tipo === 'novaVenda') {
-                document.getElementById('modal').style.display = 'flex';
                 limparCampos();
-            } else if (tipo === 'editarVenda' && linha) {
-                document.getElementById('modal').style.display = 'flex';
-                linhaAtual = linha;
+            } else if (linha) {
                 preencherCampos(linha);
             }
         }
 
+        // Função para fechar o modal
         function fecharModal() {
             document.getElementById('modal').style.display = 'none';
         }
 
+        // Função para limpar os campos do modal
         function limparCampos() {
-            document.getElementById('cliente').value = '';
-            document.getElementById('vendedor').value = '';
-            document.getElementById('veiculo').value = '';
-            document.getElementById('valorEntrada').value = '';
-            document.getElementById('valorFinanciado').value = '';
-            document.getElementById('valorTotal').value = '';
-            document.getElementById('data').value = '';
+            document.querySelectorAll('#modal input').forEach(input => input.value = '');
         }
 
+        // Função para preencher os campos do modal com dados da linha selecionada
         function preencherCampos(linha) {
             const colunas = linha.children;
             document.getElementById('cliente').value = colunas[0].innerText;
@@ -44,6 +43,7 @@
             document.getElementById('data').value = colunas[6].innerText;
         }
 
+        // Função para salvar ou atualizar uma venda
         function salvarVenda() {
             const cliente = document.getElementById('cliente').value;
             const vendedor = document.getElementById('vendedor').value;
@@ -54,6 +54,22 @@
             const data = document.getElementById('data').value;
 
             if (cliente && vendedor && veiculo && valorEntrada && valorFinanciado && valorTotal && data) {
+                const tabela = document.querySelector('table tbody');
+                const novaLinha = document.createElement('tr');
+                novaLinha.innerHTML = `
+                    <td>${cliente}</td>
+                    <td>${vendedor}</td>
+                    <td>${veiculo}</td>
+                    <td>${valorEntrada}</td>
+                    <td>${valorFinanciado}</td>
+                    <td>${valorTotal}</td>
+                    <td>${data}</td>
+                    <td>
+                        <button class="edit-btn" onclick="abrirModal('editarVenda', this.closest('tr'))">Editar</button>
+                        <button class="delete-btn" onclick="excluirLinha(this)">Excluir</button>
+                    </td>
+                `;
+                
                 if (linhaAtual) {
                     // Atualizar a linha existente
                     const colunas = linhaAtual.children;
@@ -66,21 +82,6 @@
                     colunas[6].innerText = data;
                 } else {
                     // Adicionar nova linha
-                    const tabela = document.querySelector('table tbody');
-                    const novaLinha = document.createElement('tr');
-                    novaLinha.innerHTML = `
-                        <td>${cliente}</td>
-                        <td>${vendedor}</td>
-                        <td>${veiculo}</td>
-                        <td>${valorEntrada}</td>
-                        <td>${valorFinanciado}</td>
-                        <td>${valorTotal}</td>
-                        <td>${data}</td>
-                        <td>
-                            <button class="edit-btn" onclick="abrirModal('editarVenda', this.parentElement.parentElement)">Editar</button>
-                            <button class="delete-btn" onclick="excluirLinha(this)">Excluir</button>
-                        </td>
-                    `;
                     tabela.appendChild(novaLinha);
                 }
                 fecharModal();
@@ -89,11 +90,13 @@
             }
         }
 
+        // Função para excluir uma linha da tabela
         function excluirLinha(botao) {
-            const linha = botao.parentElement.parentElement;
+            const linha = botao.closest('tr');
             linha.remove();
         }
 
+        // Função de busca na tabela
         function buscarTabela() {
             const filtro = document.getElementById('busca').value.toLowerCase();
             const linhas = document.querySelectorAll('table tbody tr');
@@ -121,7 +124,6 @@
                     <li><a href="vendendor.html">Controle de Vendedores</a></li>
                     <li><a href="montadora.html">Controle de Montadoras</a></li>
                     <li><a href="index.html">Sair</a></li>
-
                 </ul>
             </nav>
         </aside>
@@ -141,15 +143,17 @@
                             <th>Valor Financiado</th>
                             <th>Valor Total</th>
                             <th>Data</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- Linhas da tabela podem ser adicionadas aqui -->
+                        <!-- Linhas da tabela serão preenchidas via JavaScript -->
                     </tbody>
                 </table>
             </section>
         </main>
     </div>
+    
     <!-- Modal para adicionar ou editar venda -->
     <div class="modal" id="modal">
         <div class="modal-content">

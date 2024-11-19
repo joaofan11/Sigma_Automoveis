@@ -8,16 +8,28 @@
     <script>
         let editIndex = null; // Para armazenar o índice da linha editada
 
+        // Função para inicializar os eventos
+        function init() {
+            document.getElementById('modalVenda').style.display = 'none';
+            document.querySelectorAll('.action-btn').forEach(button => {
+                button.addEventListener('click', event => {
+                    event.preventDefault();
+                });
+            });
+        }
+
         // Função para abrir o modal para nova venda
         function abrirModalVenda() {
             document.getElementById('modalVenda').style.display = 'flex';
             editIndex = null; // Resetar o índice de edição
+            resetModalFields(); // Limpar os campos do modal
         }
 
-        // Função para abrir o modal de edição
+        // Função para editar uma venda
         function editarVenda(index) {
             editIndex = index;
             const row = document.querySelectorAll('table tbody tr')[index];
+            // Preenche os campos do modal com os valores da linha selecionada
             document.getElementById('codigo').value = row.cells[0].textContent;
             document.getElementById('vendedor').value = row.cells[1].textContent;
             document.getElementById('cliente').value = row.cells[2].textContent;
@@ -38,7 +50,7 @@
             }
         }
 
-        // Função para cadastrar nova venda ou editar
+        // Função para salvar a venda (nova ou editada)
         function salvarVenda() {
             const codigo = document.getElementById('codigo').value;
             const vendedor = document.getElementById('vendedor').value;
@@ -55,31 +67,10 @@
                 if (editIndex !== null) {
                     // Editando a linha existente
                     const row = tabela.rows[editIndex];
-                    row.cells[0].textContent = codigo;
-                    row.cells[1].textContent = vendedor;
-                    row.cells[2].textContent = cliente;
-                    row.cells[3].textContent = veiculo;
-                    row.cells[4].textContent = marca;
-                    row.cells[5].textContent = data;
-                    row.cells[6].textContent = valorEntrada;
-                    row.cells[7].textContent = valorFinanciado;
-                    row.cells[8].textContent = valorTotal;
+                    updateRowData(row, codigo, vendedor, cliente, veiculo, marca, data, valorEntrada, valorFinanciado, valorTotal);
                 } else {
                     // Cadastrando uma nova venda
-                    const novaLinha = document.createElement('tr');
-                    novaLinha.innerHTML = `
-                        <td>${codigo}</td>
-                        <td>${vendedor}</td>
-                        <td>${cliente}</td>
-                        <td>${veiculo}</td>
-                        <td>${marca}</td>
-                        <td>${data}</td>
-                        <td>${valorEntrada}</td>
-                        <td>${valorFinanciado}</td>
-                        <td>${valorTotal}</td>
-                        <td><button class="action-btn" onclick="editarVenda(${tabela.rows.length})">Editar</button><button class="action-btn delete" onclick="excluirVenda(${tabela.rows.length})">Excluir</button></td>
-                    `;
-                    tabela.appendChild(novaLinha);
+                    addNewRow(codigo, vendedor, cliente, veiculo, marca, data, valorEntrada, valorFinanciado, valorTotal);
                 }
                 fecharModalVenda();
             } else {
@@ -91,6 +82,56 @@
         function fecharModalVenda() {
             document.getElementById('modalVenda').style.display = 'none';
         }
+
+        // Função para resetar os campos do modal
+        function resetModalFields() {
+            document.getElementById('codigo').value = '';
+            document.getElementById('vendedor').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('veiculo').value = '';
+            document.getElementById('marca').value = '';
+            document.getElementById('data').value = '';
+            document.getElementById('valorEntrada').value = '';
+            document.getElementById('valorFinanciado').value = '';
+            document.getElementById('valorTotal').value = '';
+        }
+
+        // Função para adicionar uma nova linha à tabela
+        function addNewRow(codigo, vendedor, cliente, veiculo, marca, data, valorEntrada, valorFinanciado, valorTotal) {
+            const tabela = document.querySelector('table tbody');
+            const novaLinha = document.createElement('tr');
+            novaLinha.innerHTML = `
+                <td>${codigo}</td>
+                <td>${vendedor}</td>
+                <td>${cliente}</td>
+                <td>${veiculo}</td>
+                <td>${marca}</td>
+                <td>${data}</td>
+                <td>${valorEntrada}</td>
+                <td>${valorFinanciado}</td>
+                <td>${valorTotal}</td>
+                <td><button class="action-btn" onclick="editarVenda(${tabela.rows.length})">Editar</button>
+                    <button class="action-btn delete" onclick="excluirVenda(${tabela.rows.length})">Excluir</button>
+                </td>
+            `;
+            tabela.appendChild(novaLinha);
+        }
+
+        // Função para atualizar os dados de uma linha
+        function updateRowData(row, codigo, vendedor, cliente, veiculo, marca, data, valorEntrada, valorFinanciado, valorTotal) {
+            row.cells[0].textContent = codigo;
+            row.cells[1].textContent = vendedor;
+            row.cells[2].textContent = cliente;
+            row.cells[3].textContent = veiculo;
+            row.cells[4].textContent = marca;
+            row.cells[5].textContent = data;
+            row.cells[6].textContent = valorEntrada;
+            row.cells[7].textContent = valorFinanciado;
+            row.cells[8].textContent = valorTotal;
+        }
+
+        // Inicializar ao carregar a página
+        window.onload = init;
     </script>
 </head>
 <body>
@@ -109,7 +150,6 @@
                     <li><a href="vendendor.html">Controle de Vendedores</a></li>
                     <li><a href="montadora.html">Controle de Montadoras</a></li>
                     <li><a href="index.html">Sair</a></li>
-
                 </ul>
             </nav>
         </aside>

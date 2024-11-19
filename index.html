@@ -6,18 +6,6 @@
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="Index.css">
 </head>
-<script>
-    fetch('/clientes')  // Fazendo uma requisição para o Python
-        .then(response => response.json())
-        .then(data => {
-            let clientesList = document.getElementById('clientes-list');
-            data.forEach(cliente => {
-                let li = document.createElement('li');
-                li.textContent = `${cliente.nome} - ${cliente.cpf}`;
-                clientesList.appendChild(li);
-            });
-        });
-</script>
 <body>
     <div class="container">
         <nav class="sidebar">
@@ -33,13 +21,35 @@
                 <li><a href="index.html">Sair</a></li>
             </ul>
         </nav>
+
         <main class="main-content">
             <h1>Bem-vindo</h1>
             <div class="logo-container">
-                <img src="logo_sigma.png" alt="logo_sigma.png">
+                <img src="logo_sigma.png" alt="Logo Rede Sigma">
             </div>
             <p>Rede Sigma de Automóveis</p>
+
+            <!-- Lista de Clientes -->
+            <ul id="clientes-list"></ul>
         </main>
     </div>
+
+    <!-- Script para carregar os clientes -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            fetch('/clientes')
+                .then(response => response.json())
+                .then(data => {
+                    let clientesList = document.getElementById('clientes-list');
+                    data.forEach(cliente => {
+                        let li = document.createElement('li');
+                        li.textContent = `${cliente.nome} - ${cliente.cpf}`;
+                        clientesList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Erro ao carregar os clientes:', error));
+        });
+    </script>
 </body>
 </html>
+

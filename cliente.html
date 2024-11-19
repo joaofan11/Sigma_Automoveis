@@ -1,24 +1,27 @@
- // mudei 
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="cliente.css">
-    </style>
     <script>
         let editIndex = null; // Para armazenar o índice da linha editada
 
         // Função para abrir o modal para cadastro de cliente
-        function abrirModalCadastro() {
+        function abrirModalCadastro(index = null) {
+            if (index !== null) {
+                editIndex = index;
+                preencherFormulario(index); // Preenche o formulário para edição
+            } else {
+                editIndex = null;
+                limparFormulario(); // Limpa o formulário para novo cadastro
+            }
             document.getElementById('modalCadastro').style.display = 'flex';
-            editIndex = null; // Resetar o índice de edição
         }
 
-        // Função para abrir o modal de edição
-        function editarCliente(index) {
-            editIndex = index;
+        // Função para preencher o formulário com os dados de um cliente existente
+        function preencherFormulario(index) {
             const row = document.querySelectorAll('table tbody tr')[index];
             document.getElementById('cpf').value = row.cells[0].textContent;
             document.getElementById('nome').value = row.cells[1].textContent;
@@ -30,7 +33,20 @@
             document.getElementById('telefone').value = row.cells[7].textContent;
             document.getElementById('celular').value = row.cells[8].textContent;
             document.getElementById('renda').value = row.cells[9].textContent;
-            document.getElementById('modalCadastro').style.display = 'flex';
+        }
+
+        // Função para limpar o formulário
+        function limparFormulario() {
+            document.getElementById('cpf').value = '';
+            document.getElementById('nome').value = '';
+            document.getElementById('rua').value = '';
+            document.getElementById('bairro').value = '';
+            document.getElementById('numero').value = '';
+            document.getElementById('cidade').value = '';
+            document.getElementById('estado').value = '';
+            document.getElementById('telefone').value = '';
+            document.getElementById('celular').value = '';
+            document.getElementById('renda').value = '';
         }
 
         // Função para excluir um cliente
@@ -56,38 +72,31 @@
 
             if (cpf && nome && rua && bairro && numero && cidade && estado && telefone && celular && renda) {
                 const tabela = document.querySelector('table tbody');
+                const dadosCliente = `
+                    <td>${cpf}</td>
+                    <td>${nome}</td>
+                    <td>${rua}</td>
+                    <td>${bairro}</td>
+                    <td>${numero}</td>
+                    <td>${cidade}</td>
+                    <td>${estado}</td>
+                    <td>${telefone}</td>
+                    <td>${celular}</td>
+                    <td>${renda}</td>
+                    <td>
+                        <button class="action-btn" onclick="abrirModalCadastro(${tabela.rows.length})">Editar</button>
+                        <button class="action-btn delete" onclick="excluirCliente(${tabela.rows.length})">Excluir</button>
+                    </td>
+                `;
+
                 if (editIndex !== null) {
                     // Editando a linha existente
                     const row = tabela.rows[editIndex];
-                    row.cells[0].textContent = cpf;
-                    row.cells[1].textContent = nome;
-                    row.cells[2].textContent = rua;
-                    row.cells[3].textContent = bairro;
-                    row.cells[4].textContent = numero;
-                    row.cells[5].textContent = cidade;
-                    row.cells[6].textContent = estado;
-                    row.cells[7].textContent = telefone;
-                    row.cells[8].textContent = celular;
-                    row.cells[9].textContent = renda;
+                    row.innerHTML = dadosCliente; // Substitui a linha existente
                 } else {
                     // Cadastrando um novo cliente
                     const novaLinha = document.createElement('tr');
-                    novaLinha.innerHTML = `
-                        <td>${cpf}</td>
-                        <td>${nome}</td>
-                        <td>${rua}</td>
-                        <td>${bairro}</td>
-                        <td>${numero}</td>
-                        <td>${cidade}</td>
-                        <td>${estado}</td>
-                        <td>${telefone}</td>
-                        <td>${celular}</td>
-                        <td>${renda}</td>
-                        <td>
-                            <button class="action-btn" onclick="editarCliente(${tabela.rows.length})">Editar</button>
-                            <button class="action-btn delete" onclick="excluirCliente(${tabela.rows.length})">Excluir</button>
-                        </td>
-                    `;
+                    novaLinha.innerHTML = dadosCliente;
                     tabela.appendChild(novaLinha);
                 }
                 fecharModalCadastro();

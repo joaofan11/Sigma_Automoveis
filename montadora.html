@@ -8,23 +8,25 @@
     <script>
         let editIndex = null; // Para armazenar o índice da linha editada
 
-        // Função para abrir o modal para cadastro
-        function abrirModalCadastro() {
-            document.getElementById('modalCadastro').style.display = 'flex';
-            editIndex = null; // Resetar o índice de edição
-        }
-
-        // Função para abrir o modal de edição
-        function editarRegistro(index) {
-            editIndex = index;
-            const row = document.querySelectorAll('table tbody tr')[index];
-            document.getElementById('cnpj').value = row.cells[0].textContent;
-            document.getElementById('razaoSocial').value = row.cells[1].textContent;
-            document.getElementById('marca').value = row.cells[2].textContent;
-            document.getElementById('telefone').value = row.cells[3].textContent;
-            document.getElementById('celular').value = row.cells[4].textContent;
-            document.getElementById('endereco').value = row.cells[5].textContent;
-            document.getElementById('modalCadastro').style.display = 'flex';
+        // Função para abrir o modal de cadastro ou edição
+        function abrirModalCadastro(index = null) {
+            editIndex = index; // Atualiza o índice da linha editada (se houver)
+            const modal = document.getElementById('modalCadastro');
+            
+            if (editIndex !== null) {
+                const row = document.querySelectorAll('table tbody tr')[editIndex];
+                document.getElementById('cnpj').value = row.cells[0].textContent;
+                document.getElementById('razaoSocial').value = row.cells[1].textContent;
+                document.getElementById('marca').value = row.cells[2].textContent;
+                document.getElementById('telefone').value = row.cells[3].textContent;
+                document.getElementById('celular').value = row.cells[4].textContent;
+                document.getElementById('endereco').value = row.cells[5].textContent;
+            } else {
+                // Resetando os campos do modal quando não há edição
+                document.querySelectorAll('#modalCadastro input').forEach(input => input.value = '');
+            }
+            
+            modal.style.display = 'flex';
         }
 
         // Função para excluir um registro
@@ -46,15 +48,12 @@
 
             if (cnpj && razaoSocial && marca && telefone && celular && endereco) {
                 const tabela = document.querySelector('table tbody');
+                const dados = [cnpj, razaoSocial, marca, telefone, celular, endereco];
+
                 if (editIndex !== null) {
                     // Editando a linha existente
                     const row = tabela.rows[editIndex];
-                    row.cells[0].textContent = cnpj;
-                    row.cells[1].textContent = razaoSocial;
-                    row.cells[2].textContent = marca;
-                    row.cells[3].textContent = telefone;
-                    row.cells[4].textContent = celular;
-                    row.cells[5].textContent = endereco;
+                    row.cells.forEach((cell, idx) => cell.textContent = dados[idx]);
                 } else {
                     // Cadastrando um novo registro
                     const novaLinha = document.createElement('tr');
@@ -66,12 +65,13 @@
                         <td>${celular}</td>
                         <td>${endereco}</td>
                         <td>
-                            <button class="action-btn" onclick="editarRegistro(${tabela.rows.length})">Editar</button>
+                            <button class="action-btn" onclick="abrirModalCadastro(${tabela.rows.length})">Editar</button>
                             <button class="action-btn delete" onclick="excluirRegistro(${tabela.rows.length})">Excluir</button>
                         </td>
                     `;
                     tabela.appendChild(novaLinha);
                 }
+
                 fecharModalCadastro();
             } else {
                 alert('Por favor, preencha todos os campos obrigatórios.');
@@ -118,6 +118,7 @@
                             <th>Telefone</th>
                             <th>Celular</th>
                             <th>Endereço</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -131,7 +132,7 @@
     <!-- Modal para Cadastro -->
     <div class="modal" id="modalCadastro">
         <div class="modal-content">
-            <h2>Cadastrar Cliente</h2>
+            <h2>Cadastrar Montadora</h2>
             <input type="text" id="cnpj" placeholder="CNPJ" required>
             <input type="text" id="razaoSocial" placeholder="Razão Social" required>
             <input type="text" id="marca" placeholder="Marca" required>
