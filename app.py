@@ -1,3 +1,4 @@
+#mudei
 import mysql.connector
 from flask import Flask, render_template, request, jsonify
 
