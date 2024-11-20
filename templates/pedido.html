@@ -6,6 +6,24 @@
     <title>Rede Sigma de Automóveis</title>
     <link rel="stylesheet" href="pedido.css">
     <script>
+        // Função para abrir o modal de novo pedido
+        function abrirModalVenda() {
+            document.getElementById('modalVenda').style.display = 'flex';
+        // Limpar campos do formulário para um novo pedido
+            document.getElementById('pedido').value = '';
+            document.getElementById('vendedor').value = '';
+            document.getElementById('cliente').value = '';
+            document.getElementById('data').value = '';
+            document.getElementById('veiculo').value = '';
+            document.getElementById('modelo').value = '';
+            document.getElementById('montadora').value = '';
+            document.getElementById('cor').value = '';
+            document.getElementById('ano').value = '';
+            document.getElementById('acessorios').value = '';
+            document.getElementById('valor').value = '';
+        // Atualizar ação do botão de salvar para criar um novo pedido
+            document.getElementById('salvarBtn').onclick = () => salvarItem('/adicionar_pedido', 'POST');
+        }
         // Função para carregar dados na tabela (pedidos ou vendas)
         async function carregarTabela(url) {
             const resposta = await fetch(url);
@@ -37,19 +55,31 @@
 
         // Função para adicionar ou editar um item
         async function salvarItem(url, method) {
-            const dados = coletarDadosFormulario();
-            if (dados) {
-                await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(dados)
-                });
-                carregarTabela(url);
+        const dados = coletarDadosFormulario();
+        if (dados) {
+        console.log("Dados enviados:", dados);
+        try {
+            const resposta = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dados)
+            });
+            console.log("Resposta do servidor:", await resposta.json());
+            if (resposta.ok) {
+                carregarTabela('/listar_pedidos');
                 fecharModal();
             } else {
-                alert('Por favor, preencha todos os campos obrigatórios.');
+                alert("Erro ao salvar o pedido. Verifique os dados e tente novamente.");
             }
+        } catch (error) {
+            console.error("Erro ao enviar a solicitação:", error);
+            alert("Falha ao conectar ao servidor.");
         }
+        } else {
+        alert('Por favor, preencha todos os campos obrigatórios.');
+        }
+        }
+
 
         // Função para coletar os dados do formulário
         function coletarDadosFormulario() {
