@@ -1,9 +1,12 @@
-import mysql.connector
+from dotenv import load_dotenv
 import os
+import mysql.connector
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime
-from cpf_utils import CPF
 import logging
+
+# Carregar as variáveis do arquivo .env
+load_dotenv()
 
 # Configuração de logging para captura de erros
 logging.basicConfig(level=logging.INFO)
@@ -19,10 +22,6 @@ def get_db_connection():
     )
 
 # Funções de validação
-def validar_cpf(cpf):
-    """Valida um CPF utilizando a biblioteca cpf-utils"""
-    return CPF(cpf).validate()
-
 def validar_data(data):
     """Valida uma data no formato DD-MM-YYYY"""
     try:
@@ -131,9 +130,9 @@ def editar_excluir_montadora(id):
 def adicionar_pedido():
     data = request.json
 
-    # Validação de CPF e Data (utilizando funções de validação)
-    if not validar_cpf(data.get('cpf', '')) or not validar_data(data.get('data', '')):
-        return jsonify({"error": "CPF ou Data inválidos!"}), 400
+    # Validação de Data
+    if not validar_data(data.get('data', '')):  
+        return jsonify({"error": "Data inválida!"}), 400
 
     query = """
         INSERT INTO pedidos (numero, data, cliente_id, vendedor_id, montadora_id, modelo, ano, cor, acessorios, valor)
