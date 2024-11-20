@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rede Sigma de Automóveis</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/operacao_compra.css') }}">
+    <script>
+        // Função para abrir o modal de cadastro/edição de venda
+        let editIndex = null;
+
+        function abrirModalCadastro(index = null) {
+            const modal = document.getElementById('modalCadastro');
+            const row = index !== null ? document.querySelectorAll('table tbody tr')[index] : null;
+
+            if (row) {
+                document.getElementById('codigo').value = row.cells[0].textContent;
+                document.getElementById('vendedor').value = row.cells[1].textContent;
+            } else {
+                document.getElementById('codigo').value = '';
+                document.getElementById('vendedor').value = '';
+            }
+
+            editIndex = index;
+            modal.style.display = 'flex';
+        }
+
+        // Função para fechar o modal
+        function fecharModalCadastro() {
+            document.getElementById('modalCadastro').style.display = 'none';
+        }
+
+        // Função para excluir uma venda
+        function excluirVenda(index) {
+            if (confirm('Tem certeza que deseja excluir esta venda?')) {
+                const tabela = document.querySelector('table tbody');
+                tabela.deleteRow(index);
+            }
+        }
+
+        // Função para cadastrar ou editar venda
+        function salvarVenda() {
+            const codigo = document.getElementById('codigo').value;
+            const vendedor = document.getElementById('vendedor').value;
+
+            if (codigo && vendedor) {
+                const tabela = document.querySelector('table tbody');
+
+                if (editIndex !== null) {
+                    // Editando a linha existente
+                    const row = tabela.rows[editIndex];
+                    row.cells[0].textContent = codigo;
+                    row.cells[1].textContent = vendedor;
+                } else {
+                    // Cadastrando uma nova venda
+                    const novaLinha = document.createElement('tr');
+                    novaLinha.innerHTML = `
+                        <td>${codigo}</td>
+                        <td>${vendedor}</td>
+                        <td>
+                            <button class="action-btn" onclick="abrirModalCadastro(${tabela.rows.length})">Editar</button>
+                            <button class="action-btn delete" onclick="excluirVenda(${tabela.rows.length})">Excluir</button>
+                        </td>
+                    `;
+                    tabela.appendChild(novaLinha);
+                }
+                fecharModalCadastro();
+            } else {
+                alert('Por favor, preencha todos os campos obrigatórios.');
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <img src="{{ url_for('static', filename='img/logo_sigma.png') }}" alt="Logo Sigma" class="logo">
+            <ul>
+                <li><a href="#controle-veiculos">Controle de Veículos</a></li>
+                <li><a href="#controle-vendas">Controle de Vendas</a></li>
+                <li><a href="/compras">Controle de Compras</a></li>
+                <li><a href="/pedidos">Controle de Pedidos</a></li>
+                <li><a href="/clientes">Controle de Clientes</a></li>
+                <li><a href="/vendedores">Controle de Vendedores</a></li>
+                <li><a href="/montadoras">Controle de Montadoras</a></li>
+                <li><a href="/logout">Sair</a></li>
+            </ul>
+        </nav>
+
+        <main class="main-content">
+            <!-- Controle de Veículos -->
+            <section id="controle-veiculos" class="table-container">
+                <header class="header">
+                    <h1>Controle de Veículos</h1>
+                    <input type="text" class="search-bar" placeholder="Buscar...">
+                    <button class="action-btn" onclick="abrirModalVeiculo()">Cadastrar Veículo</button>
+                </header>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Placa</th>
+                            <th>Modelo</th>
+                            <th>Marca</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaVeiculos"></tbody>
+                </table>
+            </section>
+
+            <!-- Controle de Vendas -->
+            <section id="controle-vendas" class="table-container">
+                <header class="header">
+                    <h1>Controle de Vendas</h1>
+                    <input type="text" class="search-bar" placeholder="Buscar...">
+                    <button class="action-btn" onclick="abrirModalVenda()">Nova Venda</button>
+                </header>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Vendedor</th>
+                            <th>Cliente</th>
+                            <th>Veículo</th>
+                            <th>Marca</th>
+                            <th>Data</th>
+                            <th>Valor de Entrada</th>
+                            <th>Valor Financiado</th>
+                            <th>Valor Total</th>
+                            <th>Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaVendas"></tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal de Cadastro de Venda -->
+    <div class="modal" id="modalCadastro">
+        <div class="modal-content">
+            <h2>Cadastrar Venda</h2>
+            <input type="text" id="codigo" placeholder="Código da Venda" required>
+            <input type="text" id="vendedor" placeholder="Vendedor" required>
+            <button onclick="salvarVenda()">Salvar</button>
+            <button onclick="fecharModalCadastro()">Cancelar</button>
+        </div>
+    </div>
+</body>
+</html>

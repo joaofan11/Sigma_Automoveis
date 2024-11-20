@@ -1,15 +1,18 @@
-from dotenv import load_dotenv
 import os
-import mysql.connector
+import logging
 from flask import Flask, request, jsonify, render_template
 from datetime import datetime
-import logging
+import mysql.connector
+from dotenv import load_dotenv
 
-# Carregar as variáveis do arquivo .env
+# Carregar variáveis do arquivo .env
 load_dotenv()
 
 # Configuração de logging para captura de erros
 logging.basicConfig(level=logging.INFO)
+
+# Inicializando o Flask
+app = Flask(__name__)
 
 # Função para obter a conexão com o banco de dados
 def get_db_connection():
@@ -20,15 +23,6 @@ def get_db_connection():
         password=os.getenv("DB_PASSWORD", "sua_senha"),
         database=os.getenv("DB_NAME", "rede_sigma")
     )
-
-# Funções de validação
-def validar_data(data):
-    """Valida uma data no formato DD-MM-YYYY"""
-    try:
-        datetime.strptime(data, "%d-%m-%Y")
-        return True
-    except ValueError:
-        return False
 
 # Função genérica para executar uma consulta no banco de dados
 def execute_query(query, values=None, fetch=False):
@@ -47,6 +41,15 @@ def execute_query(query, values=None, fetch=False):
         cursor.close()
         conn.close()
 
+# Funções de validação
+def validar_data(data):
+    """Valida uma data no formato DD-MM-YYYY"""
+    try:
+        datetime.strptime(data, "%d-%m-%Y")
+        return True
+    except ValueError:
+        return False
+
 # Função genérica para adicionar um recurso no banco de dados
 def add_resource(resource_type, query, values):
     """Função genérica para adicionar recursos (clientes, montadoras, etc.)"""
@@ -55,8 +58,7 @@ def add_resource(resource_type, query, values):
         return jsonify({"error": result}), 500
     return jsonify({"message": f"{resource_type} criado com sucesso!"}), 201
 
-app = Flask(__name__)
-
+# Rota para renderizar a página inicial
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -125,26 +127,6 @@ def editar_excluir_montadora(id):
         result = execute_query(query, (id,))
         return jsonify({"message": "Montadora excluída com sucesso!"}) if not isinstance(result, str) else jsonify({"error": result}), 500
 
-# Rota para adicionar um pedido
-@app.route('/adicionar_pedido', methods=['POST'])
-def adicionar_pedido():
-    data = request.json
-
-    # Validação de Data
-    if not validar_data(data.get('data', '')):  
-        return jsonify({"error": "Data inválida!"}), 400
-
-    query = """
-        INSERT INTO pedidos (numero, data, cliente_id, vendedor_id, montadora_id, modelo, ano, cor, acessorios, valor)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-    """
-    valores = (
-        data['numero'], data['data'], data['cliente_id'], data['vendedor_id'],
-        data['montadora_id'], data['modelo'], data['ano'], data['cor'],
-        data['acessorios'], data['valor']
-    )
-    return add_resource('Pedido', query, valores)
-
 # Rota para listar e adicionar veículos
 @app.route("/veiculos", methods=["GET", "POST"])
 def veiculos():
@@ -168,5 +150,34 @@ def excluir_veiculo(id):
     execute_query(query, (id,))
     return jsonify({"message": "Veículo excluído com sucesso!"})
 
-if __name__ == '__main__':
+# Rota para listar vendas
+@app.route('/vendas', methods=['GET', 'POST'])
+def vendas():
+    if request.method == 'GET':
+        vendas = execute_query(
+            "SELECT codigo, vendedor, cliente, veiculo, marca, data, valor_entrada, valor_financiado, valor_total FROM vendas",
+            fetch=True
+        )
+        return jsonify([{
+            'codigo': venda[0],
+            'vendedor': venda[1],
+            'cliente': venda[2],
+            'veiculo': venda[3],
+            'marca': venda[4],
+            'data': venda[5],
+            'valorEntrada': venda[6],
+            'valorFinanciado': venda[7],
+            'valorTotal': venda[8]
+        } for venda in vendas])
+
+    elif request.method == 'POST':
+        venda = request.json
+        query = """INSERT INTO vendas (vendedor, cliente, veiculo, marca, data, valor_entrada, valor_financiado, valor_total)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        valores = (venda['vendedor'], venda['cliente'], venda['veiculo'], venda['marca'], venda['data'],
+                   venda['valorEntrada'], venda['valorFinanciado'], venda['valorTotal'])
+        execute_query(query, valores)
+        return jsonify({"message": "Venda registrada com sucesso!"}), 201
+
+if __name__ == "__main__":
     app.run(debug=True)
