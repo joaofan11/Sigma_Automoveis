@@ -1,3 +1,4 @@
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
@@ -16,6 +17,7 @@ body {
     width: 100%;
 }
 
+/* Barra Lateral */
 .sidebar {
     width: 20%;
     background-color: #111;
@@ -34,6 +36,7 @@ body {
 .sidebar nav ul {
     list-style: none;
     width: 100%;
+    padding: 0;
 }
 
 .sidebar nav ul li {
@@ -51,41 +54,133 @@ body {
     background-color: #424242;
 }
 
+/* Conteúdo Principal */
 .main-content {
     width: 80%;
     padding: 20px;
 }
 
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.main-content h1 {
+    font-size: 2em;
+    color: #111;
     margin-bottom: 20px;
 }
 
-.search-bar {
-    width: 50%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+.main-content .logo-container img {
+    max-width: 150px;
+    margin-bottom: 20px;
 }
 
+.main-content p {
+    font-size: 1.2em;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+ul#clientes-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+    width: 100%;
+}
+
+ul#clientes-list li {
+    background-color: #fff;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    color: #111;
+    transition: background-color 0.3s ease;
+}
+
+ul#clientes-list li:hover {
+    background-color: #f1f1f1;
+}
+
+/* Botões de Ação */
 .action-btn {
-    background-color: #000000;
-    color: #fff;
-    border: none;
+    background-color: #000;
+    color: white;
     padding: 10px 20px;
     border-radius: 4px;
+    border: none;
     cursor: pointer;
-    margin-left: 10px;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
 }
 
 .action-btn:hover {
-    background-color: #000000;
+    background-color: #424242;
 }
 
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: center;
+}
+
+.modal-content h2 {
+    font-size: 1.5em;
+    color: #111;
+    margin-bottom: 15px;
+}
+
+.modal-content input {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1em;
+}
+
+.modal-content button {
+    padding: 10px 20px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.modal-content button:first-child {
+    background-color: #000;
+    color: white;
+}
+
+.modal-content button:first-child:hover {
+    background-color: #424242;
+}
+
+.modal-content button:last-child {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal-content button:last-child:hover {
+    background-color: #c82333;
+}
+
+/* Tabelas */
 .table-container {
     overflow-x: auto;
+    margin-top: 20px;
 }
 
 table {
@@ -109,8 +204,27 @@ tbody td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }
-/* Estilo básico para o modal */
-.modal {
+
+/* Botões da Tabela */
+.table-container button {
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.table-container button.delete {
+    background-color: #dc3545;
+}
+
+.table-container button.delete:hover {
+    background-color: #c82333;
+}
+
+/* Modal Venda */
+#modalVenda {
     display: none;
     position: fixed;
     top: 0;
@@ -121,33 +235,9 @@ tbody td {
     justify-content: center;
     align-items: center;
 }
-.modal-content {
-    background: #fff;
+
+#modalVenda .modal-content {
+    max-width: 500px;
     padding: 20px;
-    border-radius: 8px;
-    width: 400px;
-    text-align: center;
+    border-radius: 10px;
 }
-.modal-content input {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-}
-.modal-content button {
-    padding: 10px 20px;
-    margin-top: 10px;
-}
-.action-btn {
-    padding: 10px;
-    margin: 10px;
-    cursor: pointer;
-    border: none;
-    background-color: #000000;
-    color: white;
-}
-.table-container button {
-    background-color: blue; /* Editar */
-    margin: 5px;
-}
-.table-container button.delete {
-    background-color: #dc3545; /* Excluir */

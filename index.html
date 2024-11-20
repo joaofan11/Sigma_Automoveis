@@ -4,10 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rede Sigma de Automóveis</title>
-    <link rel="stylesheet" href="Index.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <div class="container">
+        <!-- Barra Lateral -->
         <nav class="sidebar">
             <img src="logo_sigma.png" alt="Logo Sigma" class="logo">
             <ul>
@@ -16,21 +17,25 @@
                 <li><a href="operacao_compra.html">Controle de Compras</a></li>
                 <li><a href="pedido.html">Controle de Pedidos</a></li>
                 <li><a href="cliente.html">Controle de Clientes</a></li>
-                <li><a href="vendendor.html">Controle de Vendedores</a></li>
+                <li><a href="vendedor.html">Controle de Vendedores</a></li>
                 <li><a href="montadora.html">Controle de Montadoras</a></li>
-                <li><a href="index.html">Sair</a></li>
+                <li><a href="01.tela_login.html">Sair</a></li>
             </ul>
         </nav>
 
+        <!-- Conteúdo Principal -->
         <main class="main-content">
             <h1>Bem-vindo</h1>
             <div class="logo-container">
-                <img src="logo_sigma.png" alt="Logo Rede Sigma">
+                <img src="logo_sigma.png" alt="Logo Rede Sigma" class="main-logo">
             </div>
             <p>Rede Sigma de Automóveis</p>
 
             <!-- Lista de Clientes -->
-            <ul id="clientes-list"></ul>
+            <section>
+                <h2>Lista de Clientes</h2>
+                <ul id="clientes-list"></ul>
+            </section>
         </main>
     </div>
 
@@ -38,18 +43,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             fetch('/clientes')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Erro na solicitação: ' + response.statusText);
+                    }
+                    return response.json();
+                })
                 .then(data => {
-                    let clientesList = document.getElementById('clientes-list');
+                    const clientesList = document.getElementById('clientes-list');
                     data.forEach(cliente => {
-                        let li = document.createElement('li');
-                        li.textContent = `${cliente.nome} - ${cliente.cpf}`;
+                        const li = document.createElement('li');
+                        li.textContent = `${cliente.nome} - CPF: ${cliente.cpf}`;
                         clientesList.appendChild(li);
                     });
                 })
-                .catch(error => console.error('Erro ao carregar os clientes:', error));
+                .catch(error => {
+                    console.error('Erro ao carregar os clientes:', error);
+                    const clientesList = document.getElementById('clientes-list');
+                    clientesList.textContent = 'Erro ao carregar os dados dos clientes.';
+                });
         });
     </script>
 </body>
 </html>
-

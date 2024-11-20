@@ -17,7 +17,7 @@ body {
 }
 
 .sidebar {
-    width: 250px;
+    width: 20%;
     background-color: #111;
     color: #fff;
     display: flex;
@@ -38,42 +38,22 @@ body {
 
 .sidebar nav ul li {
     padding: 10px 20px;
-    text-align: center;
 }
 
 .sidebar nav ul li a {
     text-decoration: none;
-    color: white;
+    color: #fff;
     display: block;
     width: 100%;
-    padding: 10px;
-    background-color: #111;
-    transition: background-color 0.3s;
 }
 
 .sidebar nav ul li a:hover {
-    background-color: #575757;
+    background-color: #424242;
 }
 
 .main-content {
-    flex: 1;
+    width: 80%;
     padding: 20px;
-    background-color: white;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.main-content h1 {
-    font-size: 2em;
-    margin-bottom: 20px;
-}
-
-.main-content p {
-    font-size: 1.5em;
-    color: #333;
 }
 
 .header {
@@ -92,7 +72,7 @@ body {
 
 .action-btn {
     background-color: #000000;
-    color: white;
+    color: #fff;
     border: none;
     padding: 10px 20px;
     border-radius: 4px;
@@ -101,7 +81,7 @@ body {
 }
 
 .action-btn:hover {
-    background-color: #575757;
+    background-color: #000000;
 }
 
 .table-container {
@@ -117,7 +97,7 @@ table {
 
 thead {
     background-color: #212121;
-    color: white;
+    color: #fff;
 }
 
 thead th {
@@ -129,8 +109,7 @@ tbody td {
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }
-
-/* Estilo para o modal */
+/* Estilo básico para o modal */
 .modal {
     display: none;
     position: fixed;
@@ -142,32 +121,34 @@ tbody td {
     justify-content: center;
     align-items: center;
 }
-
 .modal-content {
     background: #fff;
     padding: 20px;
-    border-radius: px;
+    border-radius: 8px;
     width: 400px;
     text-align: center;
 }
-
 .modal-content input {
     width: 100%;
     padding: 10px;
     margin: 8px 0;
 }
-
 .modal-content button {
     padding: 10px 20px;
     margin-top: 10px;
 }
-
-/* Estilos para botões na tabela */
+.action-btn {
+    padding: 10px;
+    margin: 10px;
+    cursor: pointer;
+    border: none;
+    background-color: #000000;
+    color: white;
+}
 .table-container button {
-    background-color: blue; /* Editar */
+    background-color: #28a745; /* Editar */
     margin: 5px;
 }
-
 .table-container button.delete {
     background-color: #dc3545; /* Excluir */
 }

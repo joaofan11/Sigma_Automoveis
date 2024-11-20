@@ -1,215 +1,88 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
     display: flex;
     height: 100vh;
-    background-color: #f5f5f5;
 }
 
 .container {
     display: flex;
+    flex-direction: row;
+    height: 100%;
     width: 100%;
 }
 
 .sidebar {
-    width: 20%;
-    background-color: #111;
+    width: 250px;
+    background-color: #333;
     color: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 20px;
+    padding: 20px 0;
 }
 
-.sidebar .logo img {
-    width: 80px;
+.sidebar .logo {
+    max-width: 80%;
     margin-bottom: 20px;
 }
 
-.sidebar nav ul {
+.sidebar ul {
     list-style: none;
+    padding: 0;
     width: 100%;
 }
 
-.sidebar nav ul li {
-    padding: 10px 20px;
+.sidebar ul li {
+    width: 100%;
+    margin: 10px 0;
 }
 
-.sidebar nav ul li a {
+.sidebar ul li a {
     text-decoration: none;
-    color: white;
-    display: block;
-    width: 100%;
+    color: #fff;
     padding: 10px;
-    background-color: #111;
-    transition: background-color 0.3s;
+    display: block;
+    text-align: center;
+    transition: background 0.3s ease;
 }
 
-.sidebar nav ul li a:hover {
+.sidebar ul li a:hover {
     background-color: #575757;
 }
 
 .main-content {
-    width: 80%;
+    flex: 1;
     padding: 20px;
-    background-color: white;
-    text-align: center;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-}
-
-.main-content h1 {
-    font-size: 2em;
-    margin-bottom: 20px;
-}
-
-.main-content p {
-    font-size: 1.5em;
-    color: #333;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.search-bar {
-    width: 50%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.action-btn, .table-container button {
-    background-color: #000;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-left: 10px;
-}
-
-.action-btn:hover, .table-container button:hover {
-    background-color: #575757;
-}
-
-.table-container {
-    overflow-x: auto;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #fff;
-    border: 1px solid #ddd;
-}
-
-thead {
-    background-color: #212121;
-    color: white;
-}
-
-thead th {
-    padding: 10px;
-    text-align: left;
-}
-
-tbody td {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-}
-
-/* Estilo para o modal */
-.modal, #modalVenda {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content, .table-container button, .delete-btn, .edit-btn {
-    width: 100%;
-    padding: 10px;
-    margin: 8px 0;
-    border-radius: 4px;
     text-align: center;
 }
 
-.modal-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 500px;
+.main-content h1 {
+    margin-bottom: 20px;
 }
 
-.table-container button {
-    margin: 5px;
-    background-color: #28a745; /* Editar */
+.main-content .logo-container {
+    margin: 20px 0;
 }
 
-.table-container button.delete {
-    background-color: #dc3545; /* Excluir */
+.main-content .main-logo {
+    max-width: 200px;
 }
 
-.delete-btn {
-    background-color: red;
-    color: white;
+ul#clientes-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
 }
 
-.edit-btn {
-    background-color: blue;
-    color: white;
-}
-
-/* Estilo para os botões adicionais */
-.Entrar, .Cancelar {
-    border: none;
-    padding: 15px;
-    width: 20%;
-    border-radius: 10px;
-    color: white;
-    font-size: 15px;
-}
-
-.Entrar {
-    background-color: dodgerblue;
-}
-
-.Cancelar {
-    background-color: rgb(172, 9, 9);
-}
-
-/* Estilos gerais para inputs */
-input {
-    padding: 15px;
-    border: none;
-    outline: none;
-    font-size: 15px;
-    border-radius: 5%;
-}
-
-/* Div do modal de venda */
-div {
-    background-color: rgb(14, 17, 22);
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 20px;
-    color: rgb(255, 255, 255);
+ul#clientes-list li {
+    background-color: #f9f9f9;
+    margin: 5px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
