@@ -8,74 +8,104 @@
 </head>
 <body>
     <div class="container">
-        <nav class="sidebar">
-            <img src="logo_sigma.png" alt="Logo Sigma" class="logo">
-            <ul>
-                <li><a href="veiculo.html">Controle de Veículos</a></li>
-                <li><a href="operacao_venda.html">Controle de Vendas</a></li>
-                <li><a href="operacao_compra.html">Controle de Compras</a></li>
-                <li><a href="pedido.html">Controle de Pedidos</a></li>
-                <li><a href="cliente.html">Controle de Clientes</a></li>
-                <li><a href="vendendor.html">Controle de Vendedores</a></li>
-                <li><a href="montadora.html">Controle de Montadoras</a></li>
-                <li><a href="index.html">Sair</a></li>
-            </ul>
-        </nav>
-
-        <main class="main-content">
-            <h1>Bem-vindo</h1>
-            <div class="logo-container">
-                <img src="logo_sigma.png" alt="Logo Rede Sigma">
+        <aside class="sidebar">
+            <div class="logo">
+                <img src="logo_sigma.png" alt="Logo">
             </div>
-            <p>Rede Sigma de Automóveis</p>
+            <nav>
+                <ul>
+                    <li><a href="veiculo.html">Controle de Veículos</a></li>
+                    <li><a href="operacao_venda.html">Controle de Vendas</a></li>
+                    <li><a href="operacao_compra.html">Controle de Compras</a></li>
+                    <li><a href="pedido.html">Controle de Pedidos</a></li>
+                    <li><a href="cliente.html">Controle de Clientes</a></li>
+                    <li><a href="vendendor.html">Controle de Vendedores</a></li>
+                    <li><a href="montadora.html">Controle de Montadoras</a></li>
+                    <li><a href="index.html">Sair</a></li>
+                </ul>
+            </nav>
+        </aside>
 
-            <ul id="clientes-list"></ul>
-        </main>
-    </div>
+    <main class="main-content">
+        <header class="header">
+            <input type="text" class="search-bar" placeholder="Buscar...">
+            <button class="action-btn" onclick="abrirModalCadastro()">Cadastrar</button>
+        </header>
+        <section class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                    <th>Cpf</th>
+                    <th>Nome</th>
+                    <th>Rua</th>
+                    <th>Bairro</th>
+                    <th>Numero</th>
+                    <th>Cidade</th>
+                    <th>Estado</th>
+                    <th>Telefone</th>
+                    <th>Celular</th>
+                    <th>Renda</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Linhas da tabela podem ser adicionadas aqui -->
+                </tbody>
+            </table>
+        </section>
+    </main>
 
     <!-- Modal para Cadastro de Cliente -->
     <div class="modal" id="modalCadastro">
         <div class="modal-content">
             <h2>Cadastrar Cliente</h2>
-            <input type="text" id="cpf" placeholder="CPF" required>
-            <input type="text" id="nome" placeholder="Nome" required>
-            <input type="text" id="rua" placeholder="Rua" required>
-            <input type="text" id="bairro" placeholder="Bairro" required>
-            <input type="text" id="numero" placeholder="Número" required>
-            <input type="text" id="cidade" placeholder="Cidade" required>
-            <input type="text" id="estado" placeholder="Estado" required>
-            <input type="text" id="telefone" placeholder="Telefone" required>
-            <input type="text" id="celular" placeholder="Celular" required>
-            <input type="number" id="renda" placeholder="Renda" required>
-            <button onclick="salvarCliente()">Salvar</button>
-            <button onclick="fecharModalCadastro()">Cancelar</button>
+            <form id="formCadastro">
+                <input type="text" id="cpf" placeholder="CPF" required>
+                <input type="text" id="nome" placeholder="Nome" required>
+                <input type="text" id="rua" placeholder="Rua" required>
+                <input type="text" id="bairro" placeholder="Bairro" required>
+                <input type="text" id="numero" placeholder="Número" required>
+                <input type="text" id="cidade" placeholder="Cidade" required>
+                <input type="text" id="estado" placeholder="Estado" required>
+                <input type="text" id="telefone" placeholder="Telefone" required>
+                <input type="text" id="celular" placeholder="Celular" required>
+                <input type="number" id="renda" placeholder="Renda" required>
+                <button type="button" onclick="salvarCliente()">Salvar</button>
+                <button type="button" onclick="fecharModalCadastro()">Cancelar</button>
+            </form>
         </div>
     </div>
 
+    <!-- Scripts -->
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            fetch('/clientes')  // Requisição GET para pegar os dados dos clientes
-                .then(response => response.json())
-                .then(data => {
-                    let clientesList = document.getElementById('clientes-list');
-                    data.forEach(cliente => {
-                        let li = document.createElement('li');
-                        li.textContent = `${cliente.nome} - ${cliente.cpf}`;
-                        clientesList.appendChild(li);
-                    });
-                })
-                .catch(error => console.error('Erro ao carregar os clientes:', error));
+        // Carregar Lista de Clientes
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const response = await fetch('/clientes'); // Requisição GET
+                const data = await response.json();
+                const clientesList = document.getElementById('clientes-list');
+
+                data.forEach(cliente => {
+                    const li = document.createElement('li');
+                    li.textContent = `${cliente.nome} - ${cliente.cpf}`;
+                    clientesList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Erro ao carregar os clientes:', error);
+            }
         });
 
+        // Abrir Modal
         function abrirModalCadastro() {
             document.getElementById('modalCadastro').style.display = 'flex';
         }
 
+        // Fechar Modal
         function fecharModalCadastro() {
             document.getElementById('modalCadastro').style.display = 'none';
         }
 
-        function salvarCliente() {
+        // Salvar Cliente
+        async function salvarCliente() {
             const cliente = {
                 cpf: document.getElementById('cpf').value,
                 nome: document.getElementById('nome').value,
@@ -89,19 +119,24 @@
                 renda: document.getElementById('renda').value
             };
 
-            fetch('/clientes', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(cliente)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Cliente cadastrado com sucesso!');
-                location.reload();  // Atualiza a lista de clientes
-            })
-            .catch(error => console.error('Erro ao salvar cliente:', error));
+            try {
+                const response = await fetch('/clientes', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(cliente)
+                });
+
+                if (response.ok) {
+                    alert('Cliente cadastrado com sucesso!');
+                    location.reload(); // Atualiza a lista de clientes
+                } else {
+                    throw new Error('Erro ao salvar cliente.');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar cliente:', error);
+            }
         }
     </script>
 </body>

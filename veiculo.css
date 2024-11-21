@@ -6,24 +6,26 @@
 
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
     display: flex;
     height: 100vh;
-    background-color: #f5f5f5;
 }
 
 .container {
     display: flex;
+    flex-direction: row;
+    height: 100%;
     width: 100%;
 }
 
 .sidebar {
-    width: 20%;
+    width: 250px;
     background-color: #111;
     color: #fff;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding-top: 20px;
+    padding: 20px 0;
 }
 
 .sidebar .logo img {
@@ -31,15 +33,20 @@ body {
     margin-bottom: 20px;
 }
 
-.sidebar nav ul {
-    list-style: none;
+.sidebar ul li {
     width: 100%;
+    margin: 10px 0;
 }
 
 .sidebar nav ul li {
     padding: 10px 20px;
 }
 
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+    width: 100%;
+}
 .sidebar nav ul li a {
     text-decoration: none;
     color: #fff;
@@ -159,3 +166,4 @@ tbody td {
     background-color: blue;
     color: white;
 }
+
