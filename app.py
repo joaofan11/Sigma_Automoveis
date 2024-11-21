@@ -58,10 +58,26 @@ def add_resource(resource_type, query, values):
         return jsonify({"error": result}), 500
     return jsonify({"message": f"{resource_type} criado com sucesso!"}), 201
 
-# Rota para renderizar a página inicial
+# Rota para renderizar a página de login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        # Recebe os dados de login
+        data = request.json
+        usuario = data.get('usuario')
+        senha = data.get('senha')
+
+        # Verificação simples de usuário e senha
+        if usuario == 'admin' and senha == 'admin':
+            return jsonify({'success': True})
+        else:
+            return jsonify({'success': False})
+    return render_template('login.html')  # Rendeiza a página de login no GET
+
+# Rota para renderizar a página inicial após login bem-sucedido
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')  # Página principal após login
 
 # Rota para listar e adicionar clientes
 @app.route('/clientes', methods=['GET', 'POST'])
@@ -179,5 +195,5 @@ def vendas():
         execute_query(query, valores)
         return jsonify({"message": "Venda registrada com sucesso!"}), 201
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
