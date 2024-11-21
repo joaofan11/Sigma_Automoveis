@@ -1,70 +1,50 @@
-#pagina veiculo.py
-from flask import Flask, render_template, request, jsonify
-import mysql.connector
+# veiculo.py
+import json
+from data_manager import salvar_dados, carregar_dados
+from db_json import add_item, list_items
 
-app = Flask(__name__)
+# Função para adicionar um veículo
+def adicionar_veiculo(entries):
+    veiculo = {
+        "marca": entries["Marca"].get(),
+        "modelo": entries["Modelo"].get(),
+        "placa": entries["Placa"].get()
+    }
+    add_item("veiculos.json", veiculo)
 
-# Configuração da conexão com o MySQL
-def get_db_connection():
-    """Função para obter uma nova conexão com o banco de dados"""
-    return mysql.connector.connect(
-        host="localhost",
-        user="seu_usuario",
-        password="sua_senha",
-        database="rede_sigma"
-    )
-
-# Rota para exibir a página principal
-@app.route("/")
-def index():
-    return render_template("index.html")
-
-# Rota para buscar os veículos no banco de dados
-@app.route("/veiculos", methods=["GET"])
+# Função para listar os veículos
 def listar_veiculos():
-    try:
-        db = get_db_connection()
-        cursor = db.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM veiculos ORDER BY marca, modelo")
-        veiculos = cursor.fetchall()
-        cursor.close()
-        db.close()
-        return jsonify(veiculos)
-    except mysql.connector.Error as err:
-        return jsonify({"error": f"Erro ao buscar veículos: {err}"}), 500
+    return list_items("veiculos.json")
 
-# Rota para adicionar um veículo
-@app.route("/veiculos", methods=["POST"])
+
+veiculos = carregar_dados('veiculos.json')
+
+class Veiculo:
+    def __init__(self, chassi, placa, marca, modelo, ano_fabricacao, ano_modelo, cor, valor):
+        self.chassi = chassi
+        self.placa = placa
+        self.marca = marca
+        self.modelo = modelo
+        self.ano_fabricacao = ano_fabricacao
+        self.ano_modelo = ano_modelo
+        self.cor = cor
+        self.valor = valor
+
 def adicionar_veiculo():
-    data = request.json
-    try:
-        db = get_db_connection()
-        cursor = db.cursor()
-        cursor.execute("""
-            INSERT INTO veiculos (numero_chassi, placa, marca, modelo, ano_fabricacao, ano_modelo, cor, valor)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (data["chassi"], data["placa"], data["marca"], data["modelo"], data["anoFabricacao"],
-              data["anoModelo"], data["cor"], data["valor"]))
-        db.commit()
-        cursor.close()
-        db.close()
-        return jsonify({"message": "Veículo adicionado com sucesso!"}), 201
-    except mysql.connector.Error as err:
-        return jsonify({"error": f"Erro ao adicionar veículo: {err}"}), 400
+    chassi = input("Digite o número do chassi: ")
+    placa = input("Digite a placa: ")
+    marca = input("Digite a marca: ")
+    modelo = input("Digite o modelo: ")
+    ano_fabricacao = input("Digite o ano de fabricação: ")
+    ano_modelo = input("Digite o ano do modelo: ")
+    cor = input("Digite a cor: ")
+    valor = input("Digite o valor: ")
 
-# Rota para excluir um veículo
-@app.route("/veiculos/<int:id>", methods=["DELETE"])
-def excluir_veiculo(id):
-    try:
-        db = get_db_connection()
-        cursor = db.cursor()
-        cursor.execute("DELETE FROM veiculos WHERE id = %s", (id,))
-        db.commit()
-        cursor.close()
-        db.close()
-        return jsonify({"message": "Veículo excluído com sucesso!"})
-    except mysql.connector.Error as err:
-        return jsonify({"error": f"Erro ao excluir veículo: {err}"}), 400
+    veiculo = Veiculo(chassi, placa, marca, modelo, ano_fabricacao, ano_modelo, cor, valor)
+    veiculos.append(veiculo.__dict__)
+    salvar_dados('veiculos.json', veiculos)
 
-if __name__ == "__main__":
-    app.run(debug=True)
+def listar_veiculos():
+    veiculos_ordenados = sorted(veiculos, key=lambda x: (x['marca'], x['modelo']))
+    for veiculo in veiculos_ordenados:
+        print(f"Marca: {veiculo['marca']}, Modelo: {veiculo['modelo']}, Placa: {veiculo['placa']}")

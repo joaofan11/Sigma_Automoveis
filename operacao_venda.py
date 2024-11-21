@@ -1,98 +1,49 @@
-#pagina operacao_venda.py
-from flask import Flask, render_template, request, jsonify
-import mysql.connector
+# operacao_venda.py
+import json
+from db_json import add_item, list_items
 
-app = Flask(__name__)
+# Função para adicionar uma operação de venda
+def adicionar_venda(entries):
+    venda = {
+        "numero": entries["Número"].get(),
+        "cliente": entries["Cliente"].get(),
+        "veiculo": entries["Veículo"].get()
+    }
+    add_item("vendas.json", venda)
 
-# Configuração do banco de dados
-db_config = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'senha',
-    'database': 'sistema_vendas'
-}
-
-# Função para conectar ao banco e garantir o fechamento automático
-def conectar_banco():
-    return mysql.connector.connect(**db_config)
-
-# Função para executar uma consulta no banco de dados
-def executar_query(query, valores=None, fetch=False):
-    conexao = conectar_banco()
-    cursor = conexao.cursor(dictionary=True)
-    cursor.execute(query, valores)
-    if fetch:
-        resultado = cursor.fetchall()
-    else:
-        conexao.commit()
-        resultado = None
-    cursor.close()
-    conexao.close()
-    return resultado
-
-# Rota principal para exibir o HTML
-@app.route('/')
-def index():
-    return render_template('operacao_venda.html')
-
-# Rota para listar as vendas
-@app.route('/vendas', methods=['GET'])
+# Função para listar as operações de venda
 def listar_vendas():
-    query = "SELECT * FROM operacoes_venda"
-    vendas = executar_query(query, fetch=True)
-    return jsonify(vendas)
+    return list_items("vendas.json")
 
-# Rota para adicionar uma nova venda
-@app.route('/vendas', methods=['POST'])
+from data_manager import salvar_dados, carregar_dados
+
+vendas = carregar_dados('vendas.json')
+
+class OperacaoVenda:
+    def __init__(self, numero, data, cliente, vendedor, veiculo, valor_entrada, valor_financiado, valor_total):
+        self.numero = numero
+        self.data = data
+        self.cliente = cliente
+        self.vendedor = vendedor
+        self.veiculo = veiculo
+        self.valor_entrada = valor_entrada
+        self.valor_financiado = valor_financiado
+        self.valor_total = valor_total
+
 def adicionar_venda():
-    dados = request.json
-    query = """
-        INSERT INTO operacoes_venda (numero, data, cliente_id, vendedor_id, veiculo_id, valor_entrada, valor_financiado, valor_total)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-    """
-    valores = (
-        dados['numero'],
-        dados['data'],
-        dados['cliente_id'],
-        dados['vendedor_id'],
-        dados['veiculo_id'],
-        dados['valor_entrada'],
-        dados['valor_financiado'],
-        dados['valor_total']
-    )
-    executar_query(query, valores)
-    return jsonify({'status': 'Venda adicionada com sucesso'})
+    numero = input("Digite o número da operação: ")
+    data = input("Digite a data: ")
+    cliente = input("Digite o nome do cliente: ")
+    vendedor = input("Digite o nome do vendedor: ")
+    veiculo = input("Digite a placa do veículo: ")
+    valor_entrada = input("Digite o valor de entrada: ")
+    valor_financiado = input("Digite o valor financiado: ")
+    valor_total = input(f"Digite o valor total: ")
 
-# Rota para editar uma venda existente
-@app.route('/vendas/<int:id>', methods=['PUT'])
-def editar_venda(id):
-    dados = request.json
-    query = """
-        UPDATE operacoes_venda
-        SET numero = %s, data = %s, cliente_id = %s, vendedor_id = %s, veiculo_id = %s, 
-            valor_entrada = %s, valor_financiado = %s, valor_total = %s
-        WHERE id = %s
-    """
-    valores = (
-        dados['numero'],
-        dados['data'],
-        dados['cliente_id'],
-        dados['vendedor_id'],
-        dados['veiculo_id'],
-        dados['valor_entrada'],
-        dados['valor_financiado'],
-        dados['valor_total'],
-        id
-    )
-    executar_query(query, valores)
-    return jsonify({'status': 'Venda editada com sucesso'})
+    venda = OperacaoVenda(numero, data, cliente, vendedor, veiculo, valor_entrada, valor_financiado, valor_total)
+    vendas.append(venda.__dict__)
+    salvar_dados('vendas.json', vendas)
 
-# Rota para excluir uma venda
-@app.route('/vendas/<int:id>', methods=['DELETE'])
-def excluir_venda(id):
-    query = "DELETE FROM operacoes_venda WHERE id = %s"
-    executar_query(query, (id,))
-    return jsonify({'status': 'Venda excluída com sucesso'})
-
-if __name__ == '__main__':
-    app.run(debug=True)
+def listar_vendas():
+    for venda in vendas:
+        print(f"Número: {venda['numero']}, Cliente: {venda['cliente']}, Veículo: {venda['veiculo']}")

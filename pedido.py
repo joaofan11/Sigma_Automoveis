@@ -1,94 +1,53 @@
-#pagina pedidp.py
-import mysql.connector
-from flask import Flask, request, jsonify
+# pedido.py
+import json
+from data_manager import salvar_dados, carregar_dados
+from db_json import add_item, list_items
 
-app = Flask(__name__)
+# Função para adicionar um pedido
+def adicionar_pedido(entries):
+    pedido = {
+        "numero": entries["Número"].get(),
+        "cliente": entries["Cliente"].get(),
+        "montadora": entries["Montadora"].get()
+    }
+    add_item("pedidos.json", pedido)
 
-# Conexão com o banco de dados
-db = mysql.connector.connect(
-    host="localhost",
-    user="seu_usuario",
-    password="sua_senha",
-    database="seu_banco"
-)
-
-cursor = db.cursor()
-
-# Função para conectar ao banco de dados
-def conectar_db():
-    return mysql.connector.connect(
-        host="localhost",
-        user="seu_usuario",
-        password="sua_senha",
-        database="seu_banco"
-    )
-
-# Rota para adicionar um pedido
-@app.route('/adicionar_pedido', methods=['POST'])
-def adicionar_pedido():
-    data = request.json
-    try:
-        db = conectar_db()
-        cursor = db.cursor()
-        query = """
-            INSERT INTO pedidos (numero, data, cliente_id, vendedor_id, montadora_id, modelo, ano, cor, acessorios, valor)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """
-        valores = (
-            data['numero'], data['data'], data['cliente_id'], data['vendedor_id'],
-            data['montadora_id'], data['modelo'], data['ano'], data['cor'],
-            data['acessorios'], data['valor']
-        )
-        cursor.execute(query, valores)
-        db.commit()
-        cursor.close()
-        db.close()
-        return jsonify({"message": "Pedido adicionado com sucesso!"})
-    except mysql.connector.Error as err:
-        return jsonify({"error": str(err)})
-
-# Rota para listar pedidos
-@app.route('/listar_pedidos', methods=['GET'])
+# Função para listar os pedidos
 def listar_pedidos():
-    try:
-        db = conectar_db()
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM pedidos")
-        resultados = cursor.fetchall()
-        pedidos = [
-            {
-                "id": linha[0],
-                "numero": linha[1],
-                "data": linha[2],
-                "cliente_id": linha[3],
-                "vendedor_id": linha[4],
-                "montadora_id": linha[5],
-                "modelo": linha[6],
-                "ano": linha[7],
-                "cor": linha[8],
-                "acessorios": linha[9],
-                "valor": linha[10]
-            } for linha in resultados
-        ]
-        cursor.close()
-        db.close()
-        return jsonify(pedidos)
-    except mysql.connector.Error as err:
-        return jsonify({"error": str(err)})
+    return list_items("pedidos.json")
 
-# Rota para excluir um pedido
-@app.route('/excluir_pedido/<int:id>', methods=['DELETE'])
-def excluir_pedido(id):
-    try:
-        db = conectar_db()
-        cursor = db.cursor()
-        cursor.execute("DELETE FROM pedidos WHERE id = %s", (id,))
-        db.commit()
-        cursor.close()
-        db.close()
-        return jsonify({"message": "Pedido excluído com sucesso!"})
-    except mysql.connector.Error as err:
-        return jsonify({"error": str(err)})
 
-if __name__ == '__main__':
-    app.run(debug=True)
+pedidos = carregar_dados('pedidos.json')
+
+class Pedido:
+    def __init__(self, numero, data, cliente, vendedor, montadora, modelo, ano, cor, acessorios, valor):
+        self.numero = numero
+        self.data = data
+        self.cliente = cliente
+        self.vendedor = vendedor
+        self.montadora = montadora
+        self.modelo = modelo
+        self.ano = ano
+        self.cor = cor
+        self.acessorios = acessorios
+        self.valor = valor
+
+def adicionar_pedido():
+    numero = input("Digite o número do pedido: ")
+    data = input("Digite a data: ")
+    cliente = input("Digite o nome do cliente: ")
+    vendedor = input("Digite o nome do vendedor: ")
+    montadora = input("Digite o nome da montadora: ")
+    modelo = input("Digite o modelo do veículo: ")
+    ano = input("Digite o ano do veículo: ")
+    cor = input("Digite a cor: ")
+    acessorios = input("Digite os acessórios: ")
+    valor = input("Digite o valor: ")
+
+    pedido = Pedido(numero, data, cliente, vendedor, montadora, modelo, ano, cor, acessorios, valor)
+    pedidos.append(pedido.__dict__)
+    salvar_dados('pedidos.json', pedidos)
+
+def listar_pedidos():
+    for pedido in pedidos:
+        print(f"Número: {pedido['numero']}, Cliente: {pedido['cliente']}, Montadora: {pedido['montadora']}")

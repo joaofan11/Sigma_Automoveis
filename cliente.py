@@ -1,71 +1,45 @@
-#pagina cliente.
-from flask import Flask, request, render_template, jsonify
-import mysql.connector
-from mysql.connector import Error
+# cliente.py
+import json
+from data_manager import salvar_dados, carregar_dados
+from db_json import add_item, list_items
 
-app = Flask(__name__)
+# Função para adicionar um cliente
+def adicionar_cliente(entries):
+    cliente = {
+        "cpf": entries["CPF"].get(),
+        "nome": entries["Nome"].get(),
+        "renda": entries["Renda"].get()
+    }
+    add_item("clientes.json", cliente)
 
-# Função para conectar ao banco de dados
-def get_db_connection():
-    try:
-        return mysql.connector.connect(
-            host="localhost",
-            user="root",  # Seu usuário do MySQL
-            password="sua_senha",  # Sua senha do MySQL
-            database="rede_sigma"  # Nome do banco de dados
-        )
-    except Error as e:
-        print(f"Erro ao conectar ao banco de dados: {e}")
-        return None
-
-# Rota para listar clientes
-@app.route('/clientes', methods=['GET'])
+# Função para listar os clientes
 def listar_clientes():
-    conn = get_db_connection()
-    if conn:
-        cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT * FROM clientes ORDER BY nome")
-        clientes = cursor.fetchall()
-        cursor.close()
-        conn.close()
-        return render_template('07.Controle de Clientes.html', clientes=clientes)
-    return jsonify({"message": "Erro ao conectar ao banco de dados."}), 500
+    return list_items("clientes.json")
 
-# Rota para adicionar um cliente
-@app.route('/clientes/adicionar', methods=['GET', 'POST'])
+clientes = carregar_dados('clientes.json')
+
+class Cliente:
+    def __init__(self, cpf, nome, endereco, telefone_residencial, celular, renda):
+        self.cpf = cpf
+        self.nome = nome
+        self.endereco = endereco
+        self.telefone_residencial = telefone_residencial
+        self.celular = celular
+        self.renda = renda
+
 def adicionar_cliente():
-    if request.method == 'POST':
-        # Pegando os dados do formulário
-        dados_cliente = {
-            'cpf': request.form['cpf'],
-            'nome': request.form['nome'],
-            'endereco_bairro': request.form['endereco_bairro'],
-            'endereco_cidade': request.form['endereco_cidade'],
-            'endereco_estado': request.form['endereco_estado'],
-            'telefone_residencial': request.form['telefone_residencial'],
-            'celular': request.form['celular'],
-            'renda': request.form['renda']
-        }
+    cpf = input("Digite o CPF: ")
+    nome = input("Digite o nome: ")
+    endereco = input("Digite o endereço (bairro, cidade, estado): ")
+    telefone_residencial = input("Digite o telefone residencial: ")
+    celular = input("Digite o celular: ")
+    renda = input("Digite a renda: ")
 
-        # Inserir o cliente no banco de dados
-        conn = get_db_connection()
-        if conn:
-            cursor = conn.cursor()
-            query = """
-                INSERT INTO clientes (cpf, nome, endereco_bairro, endereco_cidade, endereco_estado, telefone_residencial, celular, renda)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """
-            cursor.execute(query, (dados_cliente['cpf'], dados_cliente['nome'], dados_cliente['endereco_bairro'], 
-                                   dados_cliente['endereco_cidade'], dados_cliente['endereco_estado'], 
-                                   dados_cliente['telefone_residencial'], dados_cliente['celular'], 
-                                   dados_cliente['renda']))
-            conn.commit()
-            cursor.close()
-            conn.close()
-            return jsonify({"message": "Cliente adicionado com sucesso!"}), 201
-        return jsonify({"message": "Erro ao conectar ao banco de dados."}), 500
+    cliente = Cliente(cpf, nome, endereco, telefone_residencial, celular, renda)
+    clientes.append(cliente.__dict__)
+    salvar_dados('clientes.json', clientes)
 
-    return render_template('07.Controle de Clientes.html')
-
-if __name__ == "__main__":
-    app.run(debug=True)
+def listar_clientes():
+    clientes_ordenados = sorted(clientes, key=lambda x: x['nome'])
+    for cliente in clientes_ordenados:
+        print(f"CPF: {cliente['cpf']}, Nome: {cliente['nome']}, Renda: {cliente['renda']}")

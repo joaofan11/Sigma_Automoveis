@@ -1,0 +1,14 @@
+{
+    "veiculos": [
+        { "id": 1, "modelo": "Fusca", "marca": "Volkswagen", "ano": 1970, "preco": 15000, "quantidade": 3 },
+        { "id": 2, "modelo": "Civic", "marca": "Honda", "ano": 2020, "preco": 90000, "quantidade": 5 }
+    ],
+    "clientes": [
+        { "id": 1, "nome": "Carlos Silva", "email": "carlos@example.com" },
+        { "id": 2, "nome": "Ana Costa", "email": "ana@example.com" }
+    ],
+    "vendas": [
+        { "cliente_id": 1, "veiculo_id": 1, "data_venda": "2024-11-01", "preco_venda": 15000 }
+    ]
+}
+
